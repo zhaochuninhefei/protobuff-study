@@ -100,5 +100,43 @@ https://github.com/googleapis/googleapis/blob/master/google/rpc/status.proto
 更新Proto定义而不更新代码。
 
 It’s standard for software products to be backward compatible, but it is less common for them to be forward compatible. As long as you follow some simple practices when updating .proto definitions, old code will read new messages without issues, ignoring any newly added fields. To the old code, fields that were deleted will have their default value, and deleted repeated fields will be empty. For information on what “repeated” fields are, see Protocol Buffers Definition Syntax later in this topic.
-> 对软件产品来说，向后兼容一般都是要保证的，而向前兼容则是不太常见的。只要您在更新Proto定义时遵循一些简单的做法，旧代码就会读取新消息而无需忽略任何新添加的字段。对于旧代码，被删除的字段将具有其默认值，并且删除的重复字段将为空。有关“重复”字段的信息，请参见该主题后面的协议缓冲区定义语法。
+> 对软件产品来说，向后兼容一般都是要保证的，而向前兼容则是不太常见的。只要您在更新Proto定义时遵循一些简单的做法，旧代码就会读取新消息而无需忽略任何新添加的字段。对于旧代码，被删除的字段将具有其默认值，并且删除的重复字段将为空。有关“重复”字段的信息，请参见该主题后面的`Protocol Buffers Definition Syntax`。
+
+New code will also transparently read old messages. New fields will not be present in old messages; in these cases protocol buffers provide a reasonable default value.
+> 新代码还将透明地读取旧消息。新字段将不会出现在旧消息中;在这些情况下，protobuff提供了一个合理的缺省值。
+
+## When are Protocol Buffers not a Good Fit?
+什么时候不适合使用protobuff?
+
+Protocol buffers do not fit all data. In particular:
+> protobuff并不适合所有数据。特别是:
+
+- Protocol buffers tend to assume that entire messages can be loaded into memory at once and are not larger than an object graph. For data that exceeds a few megabytes, consider a different solution; when working with larger data, you may effectively end up with several copies of the data due to serialized copies, which can cause surprising spikes in memory usage.
+    > protobuff倾向于假设整个消息可以一次性加载到内存中，并且不大于一个对象图。对于超过几兆字节的数据，考虑不同的解决方案; 在处理较大的数据时，由于序列化的副本，您可能最终会得到多个数据副本，这可能会导致内存使用出现惊人的峰值。
+    >
+    > 意思是protobuff不适合处理较大(超过几兆字节)的数据。`object graph`对象图，说的是对象通过相互之间的引用关系(引用链)组成了一个图，比如JVM的可达性分析就使用了对象图技术。`not larger than an object graph`应该是说一个消息中不要存在两个无法通过引用链到达的对象。
+
+- When protocol buffers are serialized, the same data can have many different binary serializations. You cannot compare two messages for equality without fully parsing them.
+    > 当对protobuff进行序列化时，相同的数据可以有许多不同的二进制序列化。如果不完全解析两条消息，就无法比较它们是否相等。
+    >
+    > 意思是protobuff不适合需要对序列化结果进行比较的场景。
+
+- Messages are not compressed. While messages can be zipped or gzipped like any other file, special-purpose compression algorithms like the ones used by JPEG and PNG will produce much smaller files for data of the appropriate type.
+    > protobuff消息没有被压缩。虽然也可以像任何其他文件一样对protobuff消息进行zip或gzip压缩，但那些特定文件(比如JPEG和PNG)的特定压缩算法能压缩成更小的文件。
+    >
+    > 意思是protobuff不适合处理图片/视频等需要特殊压缩算法的数据。
+
+- Protocol buffer messages are less than maximally efficient in both size and speed for many scientific and engineering uses that involve large, multi-dimensional arrays of floating point numbers. For these applications, FITS and similar formats have less overhead.
+    > 对于许多涉及大量多维浮点数数组的科学和工程应用来说，protobuff消息在大小和速度上都没有达到最大效率。对于这些应用程序，FITS和类似格式的开销更小。
+
+- Protocol buffers are not well supported in non-object-oriented languages popular in scientific computing, such as Fortran and IDL.
+    > 在科学计算中流行的非面向对象语言(如Fortran和IDL)中，protobuff没有得到很好的支持。
+
+- Protocol buffer messages don't inherently self-describe their data, but they have a fully reflective schema that you can use to implement self-description. That is, you cannot fully interpret one without access to its corresponding .proto file.
+    > protobuff消息本身并不自我描述它们的数据，但是它们有一个完全反射模式，您可以使用它来实现自我描述。也就是说，如果不访问它对应的`.proto`文件，就不能完全解释它。
+    >
+    > 所以这一条是想表达protobuff不适合什么场景？必须加入`.proto`文件会有什么限制？
+
+- Protocol buffers are not a formal standard of any organization. This makes them unsuitable for use in environments with legal or other requirements to build on top of standards.
+    > protobuff不是任何组织的正式标准。这使得它们不适合在具有基于标准构建的法律或其他要求的环境中使用。
 
