@@ -85,7 +85,20 @@ Additional languages are not directly supported by Google, but rather by other G
 ## Cross-project Support
 跨项目的支持。
 
+You can use protocol buffers across projects by defining message types in .proto files that reside outside of a specific project’s code base. If you're defining message types or enums that you anticipate will be widely used outside of your immediate team, you can put them in their own file with no dependencies.
+> 通过在驻留在特定项目代码库之外的`.proto`文件中定义消息类型，可以跨项目使用协议缓冲区。如果您定义的消息类型或枚举预计将在您的直接团队之外广泛使用，那么可以将它们放在自己的文件中，不存在依赖关系。
 
+A couple of examples of proto definitions widely-used within Google are timestamp.proto and status.proto.
+> 谷歌中广泛使用的两个原型定义示例是`timestamp.proto`和`status.proto`。
 
+```
+https://github.com/protocolbuffers/protobuf/blob/main/src/google/protobuf/timestamp.proto
+https://github.com/googleapis/googleapis/blob/master/google/rpc/status.proto
+```
 
+## Updating Proto Definitions Without Updating Code
+更新Proto定义而不更新代码。
+
+It’s standard for software products to be backward compatible, but it is less common for them to be forward compatible. As long as you follow some simple practices when updating .proto definitions, old code will read new messages without issues, ignoring any newly added fields. To the old code, fields that were deleted will have their default value, and deleted repeated fields will be empty. For information on what “repeated” fields are, see Protocol Buffers Definition Syntax later in this topic.
+> 对软件产品来说，向后兼容一般都是要保证的，而向前兼容则是不太常见的。只要您在更新Proto定义时遵循一些简单的做法，旧代码就会读取新消息而无需忽略任何新添加的字段。对于旧代码，被删除的字段将具有其默认值，并且删除的重复字段将为空。有关“重复”字段的信息，请参见该主题后面的协议缓冲区定义语法。
 
