@@ -203,6 +203,35 @@ std::string name = john.name();
 std::string email = john.email();
 ```
 
+# Protocol Buffers Definition Syntax
+protobuff定义语法。
+
+When defining .proto files, you can specify that a field is either optional or repeated (proto2 and proto3) or singular (proto3). (The option to set a field to required is absent in proto3 and strongly discouraged in proto2. For more on this, see "Required is Forever" in Specifying Field Rules.)
+> 在定义`.proto`文件时，可以指定一个字段是可选的或重复的(proto2和proto3)或单数的(proto3)。(在proto3中没有将字段设置为required的选项，在proto2中强烈不鼓励。更多信息请参见指定字段规则中的“Required is Forever”。)
+
+After setting the optionality/repeatability of a field, you specify the data type. Protocol buffers support the usual primitive data types, such as integers, booleans, and floats. For the full list, see Scalar Value Types.
+> 设置字段的选项/重复性后，需要指定数据类型。protobuff支持通常的原始数据类型，例如整数，布尔值和浮点。有关完整列表，请参见标量值类型。
+
+A field can also be of:
+> 一个字段也可以是:
+
+- A message type, so that you can nest parts of the definition, such as for repeating sets of data.
+    > 消息类型，以便您可以嵌套定义的部分内容，例如用于重复数据集。
+
+- An enum type, so you can specify a set of values to choose from.
+    > 枚举类型，因此可以指定一组要从中选择的值。
+
+- A oneof type, which you can use when a message has many optional fields and at most one field will be set at the same time.
+    > oneof类型，当消息有许多可选字段且同时最多设置一个字段时，可以使用该类型。
+
+- A map type, to add key-value pairs to your definition.
+    > map类型，用于向定义中添加键值对。
+
+In proto2, messages can allow extensions to define fields outside of the message, itself. For example, the protobuf library's internal message schema allows extensions for custom, usage-specific options.
+> 在proto2中，消息可以允许扩展在消息本身之外定义字段。例如，protobuf库的内部消息模式允许对定制的、特定于使用的选项进行扩展。
+
+For more information about the options available, see the language guide for proto2 or proto3.
+> 有关可用选项的更多信息，请参阅proto2或proto3的语言指南。
 
 
 
