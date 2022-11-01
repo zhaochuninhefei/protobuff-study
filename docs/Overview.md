@@ -233,5 +233,53 @@ In proto2, messages can allow extensions to define fields outside of the message
 For more information about the options available, see the language guide for proto2 or proto3.
 > 有关可用选项的更多信息，请参阅proto2或proto3的语言指南。
 
+After setting optionality and field type, you assign a field number. Field numbers cannot be repurposed or reused. If you delete a field, you should reserve its field number to prevent someone from accidentally reusing the number.
+> 设置可选性和字段类型后，分配字段号。字段号不能被重新使用或重用。如果您删除一个字段，您应该保留它的字段编号，以防止有人意外重用该编号。
 
+# Additional Data Type Support
+附加数据类型支持。
 
+Protocol buffers support many scalar value types, including integers that use both variable-length encoding and fixed sizes. You can also create your own composite data types by defining messages that are, themselves, data types that you can assign to a field. In addition to the simple and composite value types, several common types are published.
+> protobuff支持许多标量值类型，包括使用变长编码和固定大小的整数。还可以通过定义消息来创建自己的复合数据类型，这些消息本身就是可以分配给字段的数据类型。除了简单值类型和复合值类型外，还发布了几种常见类型。
+
+## Common Types
+通用类型。
+
+- Duration is a signed, fixed-length span of time, such as 42s.
+    > 持续时间是有符号的固定长度的时间跨度，例如42秒。
+
+- Timestamp is a point in time independent of any time zone or calendar, such as 2017-01-15T01:30:15.01Z.
+    > 时间戳是一个独立于任何时区或日历的时间点，例如`2017-01-15T01:30:15.01Z`。
+
+- Interval is a time interval independent of time zone or calendar, such as 2017-01-15T01:30:15.01Z - 2017-01-16T02:30:15.01Z.
+    > 时间间隔是一个与时区或日历无关的时间间隔，如`2017-01-15T01:30:15.01Z - 2017-01-16T02:30:15.01Z`。
+
+- Date is a whole calendar date, such as 2025-09-19.
+    > Date是一个完整的日历日期，例如`2025-09-19`。
+
+- DayOfWeek is a day of the week, such as Monday.
+    > DayOfWeek是一周中的某一天，例如星期一。
+
+- TimeOfDay is a time of day, such as 10:42:23.
+    > TimeOfDay是一天中的一个时间，例如`10:42:23`。
+
+- LatLng is a latitude/longitude pair, such as 37.386051 latitude and -122.083855 longitude.
+    > Latlng是纬度/经度对，例如`37.386051纬度和-122.083855经度`。
+
+- Money is an amount of money with its currency type, such as 42 USD.
+    > Money是某个货币类型的一笔钱，如42美元。
+
+- PostalAddress is a postal address, such as 1600 Amphitheatre Parkway Mountain View, CA 94043 USA.
+    > PostalAddress是一个邮政地址，如`1600 Amphitheatre Parkway Mountain View, CA 94043 USA`。
+
+- Color is a color in the RGBA color space.
+    > 颜色是RGBA颜色空间中的一种颜色。
+
+- Month is a month of the year, such as April.
+    > Month是一年中的一个月，例如四月。
+
+## Protocol Buffers Open Source Philosophy
+protobuff开源理念。
+
+Protocol buffers were open sourced in 2008 as a way to provide developers outside of Google with the same benefits that we derive from them internally. We support the open source community through regular updates to the language as we make those changes to support our internal requirements. While we accept select pull requests from external developers, we cannot always prioritize feature requests and bug fixes that don’t conform to Google’s specific needs.
+> protobuff自2008年开源，让谷歌以外的开发人员也能享受到它的好处。通过对protobuff的定期更新来支持开源社区，但每次更新都会优先对应谷歌内部需求和BUG修复，然后才是外部提交的需求与BUG修复。
