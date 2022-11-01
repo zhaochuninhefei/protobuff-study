@@ -6,4 +6,44 @@ This guide describes how to use the protocol buffer language to structure your p
 This is a reference guide – for a step by step example that uses many of the features described in this document, see the tutorial for your chosen language (currently proto2 only; more proto3 documentation is coming soon).
 > 这是一个参考指南，它是一个循序渐进的示例，使用了本文档中描述的许多特性，请参阅所选语言的教程(目前仅支持proto2;更多的proto3文档即将发布)。
 
+# Defining A Message Type
+定义消息类型。
+
+First let's look at a very simple example. Let's say you want to define a search request message format, where each search request has a query string, the particular page of results you are interested in, and a number of results per page. Here's the .proto file you use to define the message type.
+> 首先让我们看一个非常简单的例子。假设您想要定义一个搜索请求消息格式，其中每个搜索请求都有一个查询字符串、页码以及单页件数。下面是用于定义消息类型的`.proto`文件。
+
+```protobuf
+syntax = "proto3";
+
+message SearchRequest {
+  string query = 1;
+  int32 page_number = 2;
+  int32 result_per_page = 3;
+}
+```
+- The first line of the file specifies that you're using proto3 syntax: if you don't do this the protocol buffer compiler will assume you are using proto2. This must be the first non-empty, non-comment line of the file.
+    > 文件的第一行指定您使用的是`proto3`语法:如果您不这样做，protobuf编译器将假定您使用的是`proto2`。这必须是文件的第一个非空、非注释行。
+
+- The SearchRequest message definition specifies three fields (name/value pairs), one for each piece of data that you want to include in this type of message. Each field has a name and a type.
+    > SearchRequest消息定义里指定了三个字段(名称/值对)，每一条数据片段都会被记录到这个消息里。每个字段都有一个名称和一个类型。
+
+## Specifying Field Types
+指定字段类型。
+
+In the above example, all the fields are scalar types: two integers (page_number and result_per_page) and a string (query). However, you can also specify composite types for your fields, including enumerations and other message types.
+> 在上面的示例中，所有字段都是`标量类型`:两个整数(页码和每页的结果)和一个字符串(查询)。但是，您也可以为字段指定复合类型，包括枚举和其他消息类型。
+
+## Assigning Field Numbers
+分配字段编号。
+
+As you can see, each field in the message definition has a unique number. These field numbers are used to identify your fields in the message binary format, and should not be changed once your message type is in use. Note that field numbers in the range 1 through 15 take one byte to encode, including the field number and the field's type (you can find out more about this in Protocol Buffer Encoding). Field numbers in the range 16 through 2047 take two bytes. So you should reserve the numbers 1 through 15 for very frequently occurring message elements. Remember to leave some room for frequently occurring elements that might be added in the future.
+> 可以看到，消息定义中的每个字段都有一个惟一的编号。这些字段编号用于在消息二进制格式中标识字段，一旦开始使用定义好的消息类型，就不能再更改它们。注意，从1到15的字段编号需要一个字节进行编码，包括字段编号和字段类型(您可以在`Protocol Buffer Encoding`中找到关于这方面的更多信息)。16到2047范围内的字段号占用两个字节。因此，应当将使用频率高的字段安排到`[1,15]`区间，甚至保留一部分`[1,15]`区间的编号，以供以后可能会出现的使用频率高的字段使用。
+
+The smallest field number you can specify is 1, and the largest is 2^29 - 1, or 536,870,911. You also cannot use the numbers 19000 through 19999 (FieldDescriptor::kFirstReservedNumber through FieldDescriptor::kLastReservedNumber), as they are reserved for the Protocol Buffers implementation—the protocol buffer compiler will complain if you use one of these reserved numbers in your .proto. Similarly, you cannot use any previously reserved field numbers.
+> 最小的字段编号是1,最大则是`2^29 - 1`，即`536,870,911`。注意不能使用`[19000,19999]`区间的编号(从`FieldDescriptor::kFirstReservedNumber`到`FieldDescriptor::kLastReservedNumber`)，因为它们是为protobuff实现保留的，如果你在`.proto`中使用了这些保留的数字之一，protobuff编译器将会报错。同样，您不能使用以前保留的任何字段号。
+
+
+
+
+
 
