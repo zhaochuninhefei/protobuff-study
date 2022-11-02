@@ -480,6 +480,15 @@ If an existing message type no longer meets all your needs – for example, you'
 - Changing a single optional field or extension into a member of a new oneof is safe and binary compatible. Moving multiple fields into a new oneof may be safe if you are sure that no code sets more than one at a time. Moving any fields into an existing oneof is not safe. Likewise, changing a single field oneof to an optional field or extension is safe.
   > 将单个`optional`字段或扩展更改为新的`oneof`是安全且二进制兼容的。如果没有代码同时给某几个字段中的多个字段设值的话，那么将这几个字段改为一个新的`oneof`也是安全的。任何将字段加入即存的`oneof`都是不安全的。同样的，将一个单字段的`oneof`改为`optional`字段或扩展也是安全的。
 
+# Unknown Fields
+未知字段。
+
+Unknown fields are well-formed protocol buffer serialized data representing fields that the parser does not recognize. For example, when an old binary parses data sent by a new binary with new fields, those new fields become unknown fields in the old binary.
+> 未知字段是格式良好的protobuff序列化数据中用来表示解析器无法识别的字段。例如，当旧二进制文件解析新二进制文件发送的带有新字段的数据时，这些新字段在旧二进制文件中成为未知字段。
+
+Originally, proto3 messages always discarded unknown fields during parsing, but in version 3.5 we reintroduced the preservation of unknown fields to match the proto2 behavior. In versions 3.5 and later, unknown fields are retained during parsing and included in the serialized output.
+> 最初，proto3消息总是在解析过程中丢弃未知字段，但在3.5版本中，我们重新引入了保存未知字段的功能，以匹配proto2行为。在3.5及更高版本中，解析期间将保留未知字段，并将其包含在序列化输出中。
+
 
 
 
