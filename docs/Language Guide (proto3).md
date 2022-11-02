@@ -166,7 +166,7 @@ A scalar message field can have one of the following types – the table shows t
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | double | | double | double | float | float64 | Float | double | float | double |
 | float | | float | float | float | float32 | Float | float | float | double |
-| int32 | Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative values, use sint32 instead. <br>使用变长编码。负数的效率很低，请使用sint32代替。 | int32 | int | int | int32 | Fixnum or Bignum (as required) | int | integer | int |
+| int32 | <div style="width: 300pt">Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative values, use sint32 instead. <br>使用变长编码。负数的效率很低，请使用sint32代替。</div> | int32 | int | int | int32 | Fixnum or Bignum (as required) | int | integer | int |
 | int64 | Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative values, use sint64 instead.<br>使用变长编码。负数的效率很低，请使用sint64代替。 | int64 | long | int/long④ | int64 | Bignum | long | integer/string⑥ | Int64 |
 | uint32 | Uses variable-length encoding.<br>使用变长编码，无符号整数。 | uint32 | int② | int/long④ | uint32 | Fixnum or Bignum (as required) | uint | integer | int |
 | uint64 | Uses variable-length encoding.<br>使用变长编码，无符号整数。 | uint64 | long② | int/long④ | uint64 | Bignum | ulong | integer/string⑥	 | Int64 |
