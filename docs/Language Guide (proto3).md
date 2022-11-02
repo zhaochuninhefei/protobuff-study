@@ -489,7 +489,49 @@ Unknown fields are well-formed protocol buffer serialized data representing fiel
 Originally, proto3 messages always discarded unknown fields during parsing, but in version 3.5 we reintroduced the preservation of unknown fields to match the proto2 behavior. In versions 3.5 and later, unknown fields are retained during parsing and included in the serialized output.
 > 最初，proto3消息总是在解析过程中丢弃未知字段，但在3.5版本中，我们重新引入了保存未知字段的功能，以匹配proto2行为。在3.5及更高版本中，解析期间将保留未知字段，并将其包含在序列化输出中。
 
+# Any
+Any消息类型。
 
+The Any message type lets you use messages as embedded types without having their .proto definition. An Any contains an arbitrary serialized message as bytes, along with a URL that acts as a globally unique identifier for and resolves to that message's type. To use the Any type, you need to import google/protobuf/any.proto.
+> Any消息类型允许您将消息作为嵌入类型使用，而不需要它们的`.proto`定义。Any包含作为`bytes`的任意序列化消息，以及充当全局唯一标识符并解析为该消息类型的URL。要使用Any的话，需要引入`google/protobuf/any.proto`。
+
+```protobuf
+import "google/protobuf/any.proto";
+
+message ErrorStatus {
+  string message = 1;
+  repeated google.protobuf.Any details = 2;
+}
+```
+
+The default type URL for a given message type is type.googleapis.com/_packagename_._messagename_.
+> 一个给定的消息类型的URL的默认类型是`type.googleapis.com/_packagename_._messagename_`。
+
+Different language implementations will support runtime library helpers to pack and unpack Any values in a typesafe manner – for example, in Java, the Any type will have special pack() and unpack() accessors, while in C++ there are PackFrom() and UnpackTo() methods:
+> 不同的语言实现将支持运行时库帮助程序以类型安全的方式打包和解包Any值。例如，在Java中，Any类型将实现自己的`pack()`和`unpack()`访问器，而C++则会提供`PackFrom()`和`UnpackTo()`方法。
+
+```cpp
+// Storing an arbitrary message type in Any.
+NetworkErrorDetails details = ...;
+ErrorStatus status;
+status.add_details()->PackFrom(details);
+
+// Reading an arbitrary message from Any.
+ErrorStatus status = ...;
+for (const google::protobuf::Any& detail : status.details()) {
+  if (detail.Is<NetworkErrorDetails>()) {
+    NetworkErrorDetails network_error;
+    detail.UnpackTo(&network_error);
+    ... processing network_error ...
+  }
+}
+```
+
+**Currently the runtime libraries for working with Any types are under development.**
+> 目前，用于处理Any类型的运行时库正在开发中。
+
+If you are already familiar with proto2 syntax, the Any can hold arbitrary proto3 messages, similar to proto2 messages which can allow extensions.
+> 如果您已经熟悉了proto2语法，Any可以保存任意的proto3消息，类似于允许扩展的proto2消息。
 
 
 
