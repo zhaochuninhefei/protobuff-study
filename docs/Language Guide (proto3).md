@@ -203,3 +203,37 @@ You can find out more about how these types are encoded when you serialize your 
 ⑥ Integer is used on 64-bit machines and string is used on 32-bit machines.
 > (PHP的长整型，在)64位平台上使用Integer，32位平台上使用string。
 
+# Default Values
+默认值。
+
+When a message is parsed, if the encoded message does not contain a particular singular element, the corresponding field in the parsed object is set to the default value for that field. These defaults are type-specific:
+> 在解析消息时，如果编码后的消息不包含某个singular字段，则将该字段解析为默认值。这些默认值是特定于类型的:
+
+- For strings, the default value is the empty string.
+  > 对于字符串，默认值是空字符串。
+
+- For bytes, the default value is empty bytes.
+  > 对于字节，默认值是空字节。
+
+- For bools, the default value is false.
+  > 对于布尔，默认值是false。
+
+- For numeric types, the default value is zero.
+  > 对于数字类型，默认值是0。
+
+- For enums, the default value is the first defined enum value, which must be 0.
+  > 对于枚举，默认值是第一个定义的枚举值，该值必须为0。
+
+- For message fields, the field is not set. Its exact value is language-dependent. See the generated code guide for details.
+  > 对于消息字段，没有设置该字段。它的确切值取决于语言。详细信息请参见生成的代码指南。
+
+The default value for repeated fields is empty (generally an empty list in the appropriate language).
+> 重复字段的默认值为空(在适当的语言中通常是空列表)。
+
+Note that for scalar message fields, once a message is parsed there's no way of telling whether a field was explicitly set to the default value (for example whether a boolean was set to false) or just not set at all: you should bear this in mind when defining your message types. For example, don't have a boolean that switches on some behavior when set to false if you don't want that behavior to also happen by default. Also note that if a scalar message field is set to its default, the value will not be serialized on the wire.
+> 注意，对于标量消息字段，一旦解析了消息，就无法知道字段是显式设置为默认值(例如布尔值是否设置为false)还是根本没有设置:在定义消息类型时应该记住这一点。例如，如果您不希望默认情况下也发生某些行为，就不要使用一个在设置为false时开启该行为的布尔值。还要注意，如果将标量消息字段设置为默认值，则该值将不会被序列化。
+
+See the generated code guide for your chosen language for more details about how defaults work in generated code.
+> 有关默认值如何在生成代码中工作的详细信息，请参阅所选语言的生成代码指南。
+
+
