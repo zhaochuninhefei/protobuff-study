@@ -309,6 +309,20 @@ During deserialization, unrecognized enum values will be preserved in the messag
 For more information about how to work with message enums in your applications, see the generated code guide for your chosen language.
 > 有关如何在应用程序中使用消息枚举的更多信息，请参阅所选语言的生成代码指南。
 
+## Reserved Values
+保留值。
 
+If you update an enum type by entirely removing an enum entry, or commenting it out, future users can reuse the numeric value when making their own updates to the type. This can cause severe issues if they later load old versions of the same .proto, including data corruption, privacy bugs, and so on. One way to make sure this doesn't happen is to specify that the numeric values (and/or names, which can also cause issues for JSON serialization) of your deleted entries are reserved. The protocol buffer compiler will complain if any future users try to use these identifiers. You can specify that your reserved numeric value range goes up to the maximum possible value using the max keyword.
+> 如果通过完全删除枚举条目或将其注释掉来更新枚举类型，那么将来对该类型进行更新时可能会重用该枚举的数值。如果又要使用老版本的`.proto`，这可能会导致严重的问题，包括数据损坏、隐私漏洞等等。要确保不发生这种事情，一种有效的做法是，将废弃的枚举的数值指定为保留。废弃枚举的名称也一样应该保留，避免在JSON序列化操作中引起类似问题。任何用户试图使用这些保留值时，protobuff编译器将会报错。可以使用max关键字指定保留值范围的最大值。
+
+```protobuf
+enum Foo {
+  reserved 2, 15, 9 to 11, 40 to max;
+  reserved "FOO", "BAR";
+}
+```
+
+Note that you can't mix field names and numeric values in the same reserved statement.
+> 注意，您不能在同一个保留语句中混合字段名和数值。
 
 
