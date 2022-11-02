@@ -231,9 +231,84 @@ The default value for repeated fields is empty (generally an empty list in the a
 > 重复字段的默认值为空(在适当的语言中通常是空列表)。
 
 Note that for scalar message fields, once a message is parsed there's no way of telling whether a field was explicitly set to the default value (for example whether a boolean was set to false) or just not set at all: you should bear this in mind when defining your message types. For example, don't have a boolean that switches on some behavior when set to false if you don't want that behavior to also happen by default. Also note that if a scalar message field is set to its default, the value will not be serialized on the wire.
-> 注意，对于标量消息字段，一旦解析了消息，就无法知道字段是显式设置为默认值(例如布尔值是否设置为false)还是根本没有设置:在定义消息类型时应该记住这一点。例如，如果您不希望默认情况下也发生某些行为，就不要使用一个在设置为false时开启该行为的布尔值。还要注意，如果将标量消息字段设置为默认值，则该值将不会被序列化。
+> 注意，对于标量消息字段，一旦解析了消息，就无法知道字段是显式设置为默认值(例如布尔值是否设置为false)还是根本没有设置: 在定义消息类型时应该记住这一点。例如，如果您不希望默认情况下也发生某些行为，就不要使用一个在设置为false时开启该行为的布尔值。还要注意，如果将标量消息字段设置为默认值，则该值将不会被序列化。
 
 See the generated code guide for your chosen language for more details about how defaults work in generated code.
 > 有关默认值如何在生成代码中工作的详细信息，请参阅所选语言的生成代码指南。
+
+# Enumerations
+枚举。
+
+When you're defining a message type, you might want one of its fields to only have one of a pre-defined list of values. For example, let's say you want to add a corpus field for each SearchRequest, where the corpus can be UNIVERSAL, WEB, IMAGES, LOCAL, NEWS, PRODUCTS or VIDEO. You can do this very simply by adding an enum to your message definition with a constant for each possible value.
+> 在定义消息类型时，可能希望其中一个字段只有预定义值列表中的一个。例如，假设您想为每个SearchRequest添加一个语料库字段，其中语料库可以是UNIVERSAL、WEB、IMAGES、LOCAL、NEWS、PRODUCTS或VIDEO。您可以通过在消息定义中添加一个枚举，为每个可能的值添加一个常量来非常简单地做到这一点。
+
+In the following example we've added an enum called Corpus with all the possible values, and a field of type Corpus:
+> 在下面的示例中，我们添加了一个名为Corpus的枚举，包含所有可能的值，以及一个类型为Corpus的字段:
+
+```protobuf
+enum Corpus {
+  CORPUS_UNSPECIFIED = 0;
+  CORPUS_UNIVERSAL = 1;
+  CORPUS_WEB = 2;
+  CORPUS_IMAGES = 3;
+  CORPUS_LOCAL = 4;
+  CORPUS_NEWS = 5;
+  CORPUS_PRODUCTS = 6;
+  CORPUS_VIDEO = 7;
+}
+message SearchRequest {
+  string query = 1;
+  int32 page_number = 2;
+  int32 result_per_page = 3;
+  Corpus corpus = 4;
+}
+```
+
+As you can see, the Corpus enum's first constant maps to zero: every enum definition must contain a constant that maps to zero as its first element. This is because:
+> 正如您所看到的，Corpus enum的第一个常量映射到0:每个enum定义必须包含一个映射到0的常量作为其第一个元素。这是因为:
+
+- There must be a zero value, so that we can use 0 as a numeric default value.
+  > 必须有一个零值，这样我们就可以使用0作为数值默认值。
+
+- The zero value needs to be the first element, for compatibility with the proto2 semantics where the first enum value is always the default.
+  > 0值需要是第一个元素，以兼容proto2语义: 第一个enum值总是默认值。
+
+You can define aliases by assigning the same value to different enum constants. To do this you need to set the allow_alias option to true, otherwise the protocol compiler will generate an error message when aliases are found. Though all alias values are valid during deserialization, the first value is always used when serializing.
+> 可以通过将相同的值赋给不同的enum常量来定义别名。为此，您需要将允许别名选项设置为true，否则当找到别名时，协议编译器将生成一条错误消息。尽管所有的别名值在反序列化期间都是有效的，但在序列化时总是使用第一个值。
+
+```protobuf
+enum EnumAllowingAlias {
+  option allow_alias = true;
+  EAA_UNSPECIFIED = 0;
+  EAA_STARTED = 1;
+  EAA_RUNNING = 1;
+  EAA_FINISHED = 2;
+}
+enum EnumNotAllowingAlias {
+  ENAA_UNSPECIFIED = 0;
+  ENAA_STARTED = 1;
+  // ENAA_RUNNING = 1;  // Uncommenting this line will cause a compile error inside Google and a warning message outside.
+  ENAA_FINISHED = 2;
+}
+```
+
+Enumerator constants must be in the range of a 32-bit integer. Since enum values use varint encoding on the wire, negative values are inefficient and thus not recommended. You can define enums within a message definition, as in the above example, or outside – these enums can be reused in any message definition in your .proto file. You can also use an enum type declared in one message as the type of a field in a different message, using the syntax _MessageType_._EnumType_.
+> 枚举器常量必须在32位整数的范围内。由于枚举值使用varint编码，负值效率很低，因此不建议使用负值。您可以在消息定义内定义枚举(如上例所示)，也可以在`.proto`文件中的任何消息定义中重用这些枚举。您还可以通过语法`_MessageType_._EnumType_`在一条消息中使用另一条消息中声明的enum类型作为字段类型。
+
+When you run the protocol buffer compiler on a .proto that uses an enum, the generated code will have a corresponding enum for Java, Kotlin, or C++, or a special EnumDescriptor class for Python that's used to create a set of symbolic constants with integer values in the runtime-generated class.
+> 使用protobuff编译器编译一个定义了枚举的`.proto`时，生成的代码将具有Java、Kotlin或C++对应的枚举，或者具有Python的特殊EnumDescriptor类，用于在运行时生成的类中创建一组具有整数值的符号常量。
+
+**Caution:** the generated code may be subject to language-specific limitations on the number of enumerators (low thousands for one language). Please review the limitations for the languages you plan to use.
+> **注意:** 生成的代码可能受特定于语言的枚举数限制(某些语言的枚举数较低)。请检查您计划使用的语言的限制。
+
+During deserialization, unrecognized enum values will be preserved in the message, though how this is represented when the message is deserialized is language-dependent. In languages that support open enum types with values outside the range of specified symbols, such as C++ and Go, the unknown enum value is simply stored as its underlying integer representation. In languages with closed enum types such as Java, a case in the enum is used to represent an unrecognized value, and the underlying integer can be accessed with special accessors. In either case, if the message is serialized the unrecognized value will still be serialized with the message.
+> 在反序列化期间，未识别的enum值将保留在消息中。具体如何表示未识别的enum值则取决于语言。在C++和Go等支持开放enum类型(其值在指定符号范围之外)的语言中，未知的enum值简单地存储为其底层整数表示。在具有封闭enum类型的语言(如Java)中，枚举中的一个case用于表示不可识别的值，并且可以使用特殊的访问器访问底层整数。无论哪种情况，消息被序列化时，未识别的值总会与消息一起序列化。
+> 
+> `a case in the enum is used to represent an unrecognized value`这句话不明白什么意思，这里的`case`是什么意思？是说Java这样的语言需要在对应的枚举类中定义一个专门用于表示未识别的枚举实例吗？
+
+For more information about how to work with message enums in your applications, see the generated code guide for your chosen language.
+> 有关如何在应用程序中使用消息枚举的更多信息，请参阅所选语言的生成代码指南。
+
+
 
 
