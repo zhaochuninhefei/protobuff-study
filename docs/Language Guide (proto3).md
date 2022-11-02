@@ -156,4 +156,50 @@ When you run the protocol buffer compiler on a .proto, the compiler generates th
 You can find out more about using the APIs for each language by following the tutorial for your chosen language (proto3 versions coming soon). For even more API details, see the relevant API reference (proto3 versions also coming soon).
 > 通过阅读所选语言的教程(即将推出proto3版本)，您可以了解更多关于为每种语言使用api的信息。有关更多API细节，请参阅相关API参考(proto3版本也将很快发布)。
 
+# Scalar Value Types
+标量值类型。
+
+A scalar message field can have one of the following types – the table shows the type specified in the .proto file, and the corresponding type in the automatically generated class:
+> 标量消息字段可以具有以下类型之一(表格显示了`.proto`文件中指定的类型，以及自动生成的类中相应的类型):
+
+| .proto Type | Notes | C++ Type | Java/Kotlin Type① | Python Type③ | Go Type | Ruby Type | C# Type | PHP Type | Dart Type |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| double | | double | double | float | float64 | Float | double | float | double |
+| float | | float | float | float | float32 | Float | float | float | double |
+| int32 | Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative values, use sint32 instead. <br>使用变长编码。负数的效率很低，请使用sint32代替。 | int32 | int | int | int32 | Fixnum or Bignum (as required) | int | integer | int |
+| int64 | Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative values, use sint64 instead.<br>使用变长编码。负数的效率很低，请使用sint64代替。 | int64 | long | int/long④ | int64 | Bignum | long | integer/string⑥ | Int64 |
+| uint32 | Uses variable-length encoding.<br>使用变长编码，无符号整数。 | uint32 | int② | int/long④ | uint32 | Fixnum or Bignum (as required) | uint | integer | int |
+| uint64 | Uses variable-length encoding.<br>使用变长编码，无符号整数。 | uint64 | long② | int/long④ | uint64 | Bignum | ulong | integer/string⑥	 | Int64 |
+| sint32 | Uses variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int32s.<br>使用变长编码。有符号整数。负数时相比常规的int32更高效。 | int32 | int | int | int32 | Fixnum or Bignum (as required) | int | integer | int |
+| sint64 | Uses variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int64s.<br>使用变长编码。有符号整数。负数时相比常规的int64更高效。 | int64 | long | int/long④ | int64 | Bignum | long | integer/string⑥	 | Int64 |
+| fixed32 | Always four bytes. More efficient than uint32 if values are often greater than `2^28`.<br>固定4个字节的整型，无符号。如果值常常大于`2^28`，则比uint32更高效。 | uint32 | int② | int/long④ | uint32 | Fixnum or Bignum (as required) | uint | integer | int |
+| fixed64 | Always eight bytes. More efficient than uint64 if values are often greater than `2^56`.<br>固定8个字节的整型，无符号。如果值常常大于`2^56`，则比uint64更高效。 | uint64 | long② | int/long④ | uint64 | Bignum | ulong | integer/string⑥ | Int64 |
+| sfixed32 | Always four bytes.<br>固定4个字节的整型，有符号。 | int32 | int | int | int32 | Fixnum or Bignum (as required) | int | integer | int |
+| sfixed64 | Always eight bytes.<br>固定8个字节的整型，有符号。 | int64 | long | int/long④ | int64 | Bignum | long | integer/string⑥ | Int64 |
+| bool | | bool | boolean | bool | bool | TrueClass/FalseClass | bool | boolean | bool |
+| string | A string must always contain UTF-8 encoded or 7-bit ASCII text, and cannot be longer than `2^32`.<br>字符串，UTF-8编码或7位ASCII文本，长度不能超过`2^32`。 | string | String | str/unicode⑤ | string | String (UTF-8) | string | string | String |
+| bytes | May contain any arbitrary sequence of bytes no longer than `2^32`.<br>长度不超过`2^32`的任意字节序列。 | string | ByteString | str(Python2)/bytes(Python3) | []byte | String (ASCII-8BIT) | ByteString | string | List |
+
+You can find out more about how these types are encoded when you serialize your message in Protocol Buffer Encoding.
+> 在`Protocol Buffer Encoding`一节可以看到更多关于序列化消息时如何编码各种类型的信息。
+
+① Kotlin uses the corresponding types from Java, even for unsigned types, to ensure compatibility in mixed Java/Kotlin codebases.
+> Kotlin使用Java的相应类型，甚至对于未签名类型也一样，以确保混合Java/Kotlin代码库中的兼容性。
+
+② In Java, unsigned 32-bit and 64-bit integers are represented using their signed counterparts, with the top bit simply being stored in the sign bit.
+> 在Java中，无符号的32位/64位整型直接使用它们的有符号整型，其最高位简单地存储在符号位中。
+
+③ In all cases, setting values to a field will perform type checking to make sure it is valid.
+> 在(Python的)所有情况下，将值塞进字段将执行类型检查，以确保它是有效的。
+
+④ 64-bit or unsigned 32-bit integers are always represented as long when decoded, but can be an int if an int is given when setting the field. In all cases, the value must fit in the type represented when set. See ②.
+> (Python的)64位整型或无符号的32位整型在解码时始终用long，但如果在设值时类型是int，则也可以用int。无论如何，必须匹配设值时的类型。参考②。
+> 
+> 为啥参考②?
+
+⑤ Python strings are represented as unicode on decode but can be str if an ASCII string is given (this is subject to change).
+> Python字符串在解码时使用unicode，但如果明确使用了ASCII字符串，则可以使用str。(这可能会更改)
+
+⑥ Integer is used on 64-bit machines and string is used on 32-bit machines.
+> (PHP的长整型，在)64位平台上使用Integer，32位平台上使用string。
 
