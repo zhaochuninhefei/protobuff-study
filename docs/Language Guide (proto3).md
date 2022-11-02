@@ -120,7 +120,40 @@ message Foo {
 Note that you can't mix field names and field numbers in the same reserved statement.
 > 注意，您不能在同一个保留语句中混合字段名和字段编号。
 
+## What's Generated From Your .proto?
+你的`.proto`文件生成了什么东西？
 
+When you run the protocol buffer compiler on a .proto, the compiler generates the code in your chosen language you'll need to work with the message types you've described in the file, including getting and setting field values, serializing your messages to an output stream, and parsing your messages from an input stream.
+> 当您在`.proto`上运行protobuff编译器时，编译器将根据选择的语言生成`.proto`文件中描述的消息类型的代码，包括获取和设置字段值，将消息序列化到输出流，以及解析来自输入流的消息。
 
+- For C++, the compiler generates a .h and .cc file from each .proto, with a class for each message type described in your file.
+  > 对于C++，编译器从每个`.proto`生成一个`.h`和`.cc`文件，并为文件中描述的每种消息类型提供一个类。
+
+- For Java, the compiler generates a .java file with a class for each message type, as well as a special Builder class for creating message class instances.
+  > 对于Java，编译器生成一个`.java`文件，其中包含针对每种消息类型的类，以及用于创建消息类实例的特殊Builder类。
+
+- For Kotlin, in addition to the Java generated code, the compiler generates a .kt file for each message type, containing a DSL which can be used to simplify creating message instances.
+  > 对于Kotlin，除了Java生成的代码外，编译器还为每种消息类型生成一个`.kt`文件，其中包含一个DSL，可用于简化消息实例的创建。
+
+- Python is a little different — the Python compiler generates a module with a static descriptor of each message type in your .proto, which is then used with a metaclass to create the necessary Python data access class at runtime.
+  > Python略有不同，Python编译器生成一个模块，该模块带有`.proto`中每种消息类型的静态描述符，然后与元类一起使用，在运行时创建必要的Python数据访问类。
+
+- For Go, the compiler generates a .pb.go file with a type for each message type in your file.
+  > 对于Go，编译器生成一个`.pb.go`文件，为文件中的每个消息类型提供一个`type`。
+
+- For Ruby, the compiler generates a .rb file with a Ruby module containing your message types.
+  > 对于Ruby，编译器会生成一个`.rb`文件，其中包含一个包含消息类型的Ruby模块。
+
+- For Objective-C, the compiler generates a pbobjc.h and pbobjc.m file from each .proto, with a class for each message type described in your file.
+  > 对于Objective-C，编译器从每个`.proto`文件生成一个`pbobjc.h`和一个`pbobjc.m`文件，并为文件中描述的每种消息类型提供一个类。
+
+- For C#, the compiler generates a .cs file from each .proto, with a class for each message type described in your file.
+  > 对于c#，编译器从每个`.proto`生成一个`.cs`文件，并为文件中描述的每种消息类型提供一个类。
+
+- For Dart, the compiler generates a .pb.dart file with a class for each message type in your file.
+  > 对于Dart，编译器生成一个`.pb.dart`文件，为文件中的每种消息类型提供一个类。
+
+You can find out more about using the APIs for each language by following the tutorial for your chosen language (proto3 versions coming soon). For even more API details, see the relevant API reference (proto3 versions also coming soon).
+> 通过阅读所选语言的教程(即将推出proto3版本)，您可以了解更多关于为每种语言使用api的信息。有关更多API细节，请参阅相关API参考(proto3版本也将很快发布)。
 
 
