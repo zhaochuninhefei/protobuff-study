@@ -325,4 +325,77 @@ enum Foo {
 Note that you can't mix field names and numeric values in the same reserved statement.
 > 注意，您不能在同一个保留语句中混合字段名和数值。
 
+# Using Other Message Types
+使用其他消息类型。
+
+You can use other message types as field types. For example, let's say you wanted to include Result messages in each SearchResponse message – to do this, you can define a Result message type in the same .proto and then specify a field of type Result in SearchResponse:
+> 您可以使用其他消息类型作为字段类型。例如，假设您想要在每个SearchResponse消息中包含Result消息，您可以在相同的`.proto`中定义Result消息类型，然后在SearchResponse中指定类型为Result的字段:
+
+```protobuf
+message SearchResponse {
+  repeated Result results = 1;
+}
+
+message Result {
+  string url = 1;
+  string title = 2;
+  repeated string snippets = 3;
+}
+```
+
+## Importing Definitions
+导入定义。
+
+In the above example, the Result message type is defined in the same file as SearchResponse – what if the message type you want to use as a field type is already defined in another .proto file?
+> 在上面的例子中，Result消息类型定义在与SearchResponse相同的文件中，但如果用作字段类型的消息类型定义在另一个`.proto`文件中呢?
+
+You can use definitions from other .proto files by importing them. To import another .proto's definitions, you add an import statement to the top of your file:
+> 您可以通过导入其他`.proto`文件中的定义来使用它们。要导入另一个`.proto`的定义，需要在文件的顶部添加import语句:
+
+```protobuf
+import "myproject/other_protos.proto";
+```
+
+By default, you can use definitions only from directly imported .proto files. However, sometimes you may need to move a .proto file to a new location. Instead of moving the .proto file directly and updating all the call sites in a single change, you can put a placeholder .proto file in the old location to forward all the imports to the new location using the import public notion.
+> 默认情况下，只能从直接导入的`.proto`文件中使用定义。然而，有时您可能需要将`.proto`文件移动到一个新的位置。不必直接移动`.proto`文件并在一次更改中更新所有调用站点，您可以在旧位置放置一个占位符`.proto`文件，以使用`import public`将所有导入转发到新位置。
+
+**Note that the public import functionality is not available in Java.**
+> 注意，Java中没有公共导入功能。
+
+import public dependencies can be transitively relied upon by any code importing the proto containing the import public statement. For example:
+> 公共导入可以实现依赖传递。例如:
+
+新proto定义文件，相关定义都挪到这里了:
+```protobuf
+// new.proto
+// All definitions are moved here
+```
+
+旧proto定义文件，大家之前引入的都是这个proto，现在需要利用`import public`引入新的proto定义文件:
+```protobuf
+// old.proto
+// This is the proto that all clients are importing. 
+import public "new.proto";
+import "other.proto";
+```
+
+所有引入了`old.proto`的地方不用修改，就能通过 old.proto 中对 new.proto 的公共导入，来访问 new.proto 中定义的类型:
+```protobuf
+// client.proto
+import "old.proto";
+// You use definitions from old.proto and new.proto, but not other.proto
+```
+
+The protocol compiler searches for imported files in a set of directories specified on the protocol compiler command line using the -I/--proto_path flag. If no flag was given, it looks in the directory in which the compiler was invoked. In general you should set the --proto_path flag to the root of your project and use fully qualified names for all imports.
+> protobuf编译器使用参数`-I/--proto_path`在其命令行上指定一组目录，并在这个目录中搜索导入文件。如果没有显式给出这个参数，则在调用编译命令的当前目录下搜索。一般来说，应该将`--proto_path`参数设置为工程项目的根路径，并对所有导入使用完全限定名。
+
+## Using proto2 Message Types
+使用proto2消息类型。
+
+It's possible to import proto2 message types and use them in your proto3 messages, and vice versa. However, proto2 enums cannot be used directly in proto3 syntax (it's okay if an imported proto2 message uses them).
+> 可以导入proto2消息类型并在proto3消息中使用它们，反之亦然。但是，proto2枚举不能直接在proto3语法中使用。但如果是导入的proto2消息使用它们则没关系。
+
+
+
+
 
