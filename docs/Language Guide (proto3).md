@@ -42,8 +42,32 @@ As you can see, each field in the message definition has a unique number. These 
 The smallest field number you can specify is 1, and the largest is 2^29 - 1, or 536,870,911. You also cannot use the numbers 19000 through 19999 (FieldDescriptor::kFirstReservedNumber through FieldDescriptor::kLastReservedNumber), as they are reserved for the Protocol Buffers implementation—the protocol buffer compiler will complain if you use one of these reserved numbers in your .proto. Similarly, you cannot use any previously reserved field numbers.
 > 最小的字段编号是1,最大则是`2^29 - 1`，即`536,870,911`。注意不能使用`[19000,19999]`区间的编号(从`FieldDescriptor::kFirstReservedNumber`到`FieldDescriptor::kLastReservedNumber`)，因为它们是为protobuff实现保留的，如果你在`.proto`中使用了这些保留的数字之一，protobuff编译器将会报错。同样，您不能使用以前保留的任何字段号。
 
+## Specifying Field Rules
+指定字段规则。
 
+Message fields can be one of the following:
+> 消息字段可以是以下字段之一:
 
+- singular: a well-formed message can have zero or one of this field (but not more than one). When using proto3 syntax, this is the default field rule when no other field rules are specified for a given field. You cannot determine whether it was parsed from the wire. It will be serialized to the wire unless it is the default value. For more on this subject, see Field Presence.
+  > 单数: 格式良好的消息可以有0个或1个该字段(但不能超过一个)。在`proto3`中，singular是默认字段规则。protobuff无法确定是否已经解析某个singular字段，singular字段只有在非默认值时才会被序列化。有关此主题的更多信息，请参见`Field Presence`。
+  > 
+  > 关于singular字段的解析和序列化的说明，`You cannot determine whether it was parsed from the wire. It will be serialized to the wire unless it is the default value.`这两句话不是特别理解什么意思，大概是"singular字段如果没有塞值或者塞的默认值的话，就不会被序列化"的意思。`wire`在这里应该是泛指用于传输、存储序列化结果的"线路"。
+
+- optional: the same as singular, except that you can check to see if the value was explicitly set. An optional field is in one of two possible states:
+  - the field is set, and contains a value that was explicitly set or parsed from the wire. It will be serialized to the wire.
+  - the field is unset, and will return the default value. It will not be serialized to the wire.
+  > 可选:与单数相同，只是可以检查是否显式设置了值。可选字段有两种可能的状态:
+  > - 该字段已设置，并包含显式设置或解析的值。它将被序列化。
+  > - 该字段未设置，将返回默认值。它不会被序列化。
+
+- repeated: this field type can be repeated zero or more times in a well-formed message. The order of the repeated values will be preserved.
+  > 重复:该字段类型可以在格式良好的消息中重复0次或多次。重复值的顺序将被保留。
+
+- map: this is a paired key/value field type. See Maps for more on this field type.
+  > 映射：这是一个配对的键/值字段类型。有关此字段类型的更多信息，请参见`Maps`。
+
+In proto3, repeated fields of scalar numeric types use packed encoding by default. You can find out more about packed encoding in Protocol Buffer Encoding.
+> 在`proto3`中，标量数字类型的重复字段默认使用打包编码。您可以在`Protocol Buffer Encoding`中找到更多关于打包编码的信息。
 
 
 
