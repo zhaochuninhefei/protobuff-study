@@ -395,6 +395,56 @@ The protocol compiler searches for imported files in a set of directories specif
 It's possible to import proto2 message types and use them in your proto3 messages, and vice versa. However, proto2 enums cannot be used directly in proto3 syntax (it's okay if an imported proto2 message uses them).
 > 可以导入proto2消息类型并在proto3消息中使用它们，反之亦然。但是，proto2枚举不能直接在proto3语法中使用。但如果是导入的proto2消息使用它们则没关系。
 
+# Nested Types
+嵌套类型。
+
+You can define and use message types inside other message types, as in the following example – here the Result message is defined inside the SearchResponse message:
+> 您可以在其他消息类型中定义和使用消息类型，如下面的示例所示，Result消息在SearchResponse消息中定义:
+
+```protobuf
+message SearchResponse {
+  message Result {
+    string url = 1;
+    string title = 2;
+    repeated string snippets = 3;
+  }
+  repeated Result results = 1;
+}
+```
+
+If you want to reuse this message type outside its parent message type, you refer to it as _Parent_._Type_:
+> 在其父消息类型之外重用此消息类型的话，可以用`_Parent_._Type_`的方式引用它:
+
+```protobuf
+message SomeOtherMessage {
+  SearchResponse.Result result = 1;
+}
+```
+
+You can nest messages as deeply as you like:
+> 消息嵌套想多深都可以:
+
+```protobuf
+message Outer {                  // Level 0
+  message MiddleAA {  // Level 1
+    message Inner {   // Level 2
+      int64 ival = 1;
+      bool  booly = 2;
+    }
+  }
+  message MiddleBB {  // Level 1
+    message Inner {   // Level 2
+      int32 ival = 1;
+      bool  booly = 2;
+    }
+  }
+}
+```
+
+
+
+
+
 
 
 
