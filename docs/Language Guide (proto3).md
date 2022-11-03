@@ -1,7 +1,7 @@
 Language Guide (proto3)
 =====
 This guide describes how to use the protocol buffer language to structure your protocol buffer data, including .proto file syntax and how to generate data access classes from your .proto files. It covers the proto3 version of the protocol buffers language: for information on the proto2 syntax, see the Proto2 Language Guide.
-> 本指南描述了如何使用protobuff语言来构造protobuff数据，包括`.proto`文件语法以及如何从`.proto`文件生成数据访问类。它涵盖了protobuff语言的`proto3`版本: 关于`proto2`语法的信息，请参阅`Proto2 Language Guide`。
+> 本指南描述了如何使用protobuf语言来构造protobuf数据，包括`.proto`文件语法以及如何从`.proto`文件生成数据访问类。它涵盖了protobuf语言的`proto3`版本: 关于`proto2`语法的信息，请参阅`Proto2 Language Guide`。
 
 This is a reference guide – for a step by step example that uses many of the features described in this document, see the tutorial for your chosen language (currently proto2 only; more proto3 documentation is coming soon).
 > 这是一个参考指南，它是一个循序渐进的示例，使用了本文档中描述的许多特性，请参阅所选语言的教程(目前仅支持proto2;更多的proto3文档即将发布)。
@@ -40,7 +40,7 @@ As you can see, each field in the message definition has a unique number. These 
 > 可以看到，消息定义中的每个字段都有一个惟一的编号。这些字段编号用于在消息二进制格式中标识字段，一旦开始使用定义好的消息类型，就不能再更改它们。注意，从1到15的字段编号需要一个字节进行编码，包括字段编号和字段类型(您可以在`Protocol Buffer Encoding`中找到关于这方面的更多信息)。16到2047范围内的字段号占用两个字节。因此，应当将使用频率高的字段安排到`[1,15]`区间，甚至保留一部分`[1,15]`区间的编号，以供以后可能会出现的使用频率高的字段使用。
 
 The smallest field number you can specify is 1, and the largest is 2^29 - 1, or 536,870,911. You also cannot use the numbers 19000 through 19999 (FieldDescriptor::kFirstReservedNumber through FieldDescriptor::kLastReservedNumber), as they are reserved for the Protocol Buffers implementation—the protocol buffer compiler will complain if you use one of these reserved numbers in your .proto. Similarly, you cannot use any previously reserved field numbers.
-> 最小的字段编号是1,最大则是`2^29 - 1`，即`536,870,911`。注意不能使用`[19000,19999]`区间的编号(从`FieldDescriptor::kFirstReservedNumber`到`FieldDescriptor::kLastReservedNumber`)，因为它们是为protobuff实现保留的，如果你在`.proto`中使用了这些保留的数字之一，protobuff编译器将会报错。同样，您不能使用以前保留的任何字段号。
+> 最小的字段编号是1,最大则是`2^29 - 1`，即`536,870,911`。注意不能使用`[19000,19999]`区间的编号(从`FieldDescriptor::kFirstReservedNumber`到`FieldDescriptor::kLastReservedNumber`)，因为它们是为protobuf实现保留的，如果你在`.proto`中使用了这些保留的数字之一，protobuf编译器将会报错。同样，您不能使用以前保留的任何字段号。
 
 ## Specifying Field Rules
 指定字段规则。
@@ -49,9 +49,9 @@ Message fields can be one of the following:
 > 消息字段可以是以下字段之一:
 
 - `singular`: a well-formed message can have zero or one of this field (but not more than one). When using proto3 syntax, this is the default field rule when no other field rules are specified for a given field. You cannot determine whether it was parsed from the wire. It will be serialized to the wire unless it is the default value. For more on this subject, see Field Presence.
-  > 单数字段: 如果一个字段是单数字段，那么格式良好的消息里只能有0个或1个该字段。在`proto3`中，singular是默认字段规则。protobuff无法确定是否已经解析某个单数字段，单数字段只有在非默认值时才会被序列化。有关此主题的更多信息，请参见`Field Presence`。
+  > 单数字段: 如果一个字段是单数字段，那么格式良好的消息里只能有0个或1个该字段。在`proto3`中，singular是默认字段规则。protobuf无法确定是否已经解析某个单数字段，单数字段只有在非默认值时才会被序列化。有关此主题的更多信息，请参见`Field Presence`。
   > 
-  > 关于单数字段的解析和序列化的说明，`You cannot determine whether it was parsed from the wire. It will be serialized to the wire unless it is the default value.`这两句话中使用了`wire`，`wire`在这里的意思应该是指`wire protocol`，点到点的通信抽象协议，一种数据传输机制，习惯于被用来描述信息位于应用层上的一种通用表现形式，是一种应用层上的通用协议而非各类应用程序的通用型对象描述语意。在protobuff中的`wire`是想强调序列化或解析的目标是一种用于传输的二进制数据格式，而不是文本格式(protobuff的消息也可以是文本格式)。后续的翻译中，如果没有明确二进制格式与文本格式的区别，则默认就是二进制格式的消息。
+  > 关于单数字段的解析和序列化的说明，`You cannot determine whether it was parsed from the wire. It will be serialized to the wire unless it is the default value.`这两句话中使用了`wire`，`wire`在这里的意思应该是指`wire protocol`，点到点的通信抽象协议，一种数据传输机制，习惯于被用来描述信息位于应用层上的一种通用表现形式，是一种应用层上的通用协议而非各类应用程序的通用型对象描述语意。在protobuf中的`wire`是想强调序列化或解析的目标是一种用于传输的二进制数据格式，而不是文本格式(protobuf的消息也可以是文本格式)。后续的翻译中，如果没有明确二进制格式与文本格式的区别，则默认就是二进制格式的消息。
 
 - `optional`: the same as singular, except that you can check to see if the value was explicitly set. An optional field is in one of two possible states:
   - the field is set, and contains a value that was explicitly set or parsed from the wire. It will be serialized to the wire.
@@ -112,7 +112,7 @@ message SearchRequest {
 保留字段。
 
 If you update a message type by entirely removing a field, or commenting it out, future users can reuse the field number when making their own updates to the type. This can cause severe issues if they later load old versions of the same .proto, including data corruption, privacy bugs, and so on. One way to make sure this doesn't happen is to specify that the field numbers (and/or names, which can also cause issues for JSON serialization) of your deleted fields are reserved. The protocol buffer compiler will complain if any future users try to use these field identifiers.
-> 如果通过完全删除字段或将其注释掉的方式来更新消息类型，那么将来的开发者在修改该消息类型时就可能会重复使用字段编号。这样可能会在使用老版本的`.proto`时造成一些问题，包括数据损坏，隐私漏洞等。要确保这种情况不会发生的一种方法是，将那些被删除的字段编号指定为保留。另外删除的字段名也应该指定为保留，否则在做JSON序列化操作时也会引起类似的问题。如果开发者试图使用被保留的字段名或字段编号，protobuff编译器将会报错。
+> 如果通过完全删除字段或将其注释掉的方式来更新消息类型，那么将来的开发者在修改该消息类型时就可能会重复使用字段编号。这样可能会在使用老版本的`.proto`时造成一些问题，包括数据损坏，隐私漏洞等。要确保这种情况不会发生的一种方法是，将那些被删除的字段编号指定为保留。另外删除的字段名也应该指定为保留，否则在做JSON序列化操作时也会引起类似的问题。如果开发者试图使用被保留的字段名或字段编号，protobuf编译器将会报错。
 
 ```protobuf
 message Foo {
@@ -128,7 +128,7 @@ Note that you can't mix field names and field numbers in the same reserved state
 你的`.proto`文件生成了什么东西？
 
 When you run the protocol buffer compiler on a .proto, the compiler generates the code in your chosen language you'll need to work with the message types you've described in the file, including getting and setting field values, serializing your messages to an output stream, and parsing your messages from an input stream.
-> 当您在`.proto`上运行protobuff编译器时，编译器将根据选择的语言生成`.proto`文件中描述的消息类型的代码，包括获取和设置字段值，将消息序列化到输出流，以及解析来自输入流的消息。
+> 当您在`.proto`上运行protobuf编译器时，编译器将根据选择的语言生成`.proto`文件中描述的消息类型的代码，包括获取和设置字段值，将消息序列化到输出流，以及解析来自输入流的消息。
 
 - For C++, the compiler generates a .h and .cc file from each .proto, with a class for each message type described in your file.
   > 对于C++，编译器从每个`.proto`生成一个`.h`和`.cc`文件，并为文件中描述的每种消息类型提供一个类。
@@ -300,7 +300,7 @@ Enumerator constants must be in the range of a 32-bit integer. Since enum values
 > 枚举器常量必须在32位整数的范围内。由于枚举值使用varint编码，负值效率很低，因此不建议使用负值。您可以在消息定义内定义枚举(如上例所示)，也可以在`.proto`文件中的任何消息定义中重用这些枚举。您还可以通过语法`_MessageType_._EnumType_`在一条消息中使用另一条消息中声明的enum类型作为字段类型。
 
 When you run the protocol buffer compiler on a .proto that uses an enum, the generated code will have a corresponding enum for Java, Kotlin, or C++, or a special EnumDescriptor class for Python that's used to create a set of symbolic constants with integer values in the runtime-generated class.
-> 使用protobuff编译器编译一个定义了枚举的`.proto`时，生成的代码将具有Java、Kotlin或C++对应的枚举，或者具有Python的特殊EnumDescriptor类，用于在运行时生成的类中创建一组具有整数值的符号常量。
+> 使用protobuf编译器编译一个定义了枚举的`.proto`时，生成的代码将具有Java、Kotlin或C++对应的枚举，或者具有Python的特殊EnumDescriptor类，用于在运行时生成的类中创建一组具有整数值的符号常量。
 
 **Caution:** the generated code may be subject to language-specific limitations on the number of enumerators (low thousands for one language). Please review the limitations for the languages you plan to use.
 > **注意:** 生成的代码可能受特定于语言的枚举数限制(某些语言的枚举数较低)。请检查您计划使用的语言的限制。
@@ -317,7 +317,7 @@ For more information about how to work with message enums in your applications, 
 保留值。
 
 If you update an enum type by entirely removing an enum entry, or commenting it out, future users can reuse the numeric value when making their own updates to the type. This can cause severe issues if they later load old versions of the same .proto, including data corruption, privacy bugs, and so on. One way to make sure this doesn't happen is to specify that the numeric values (and/or names, which can also cause issues for JSON serialization) of your deleted entries are reserved. The protocol buffer compiler will complain if any future users try to use these identifiers. You can specify that your reserved numeric value range goes up to the maximum possible value using the max keyword.
-> 如果通过完全删除枚举条目或将其注释掉来更新枚举类型，那么将来对该类型进行更新时可能会重用该枚举的数值。如果又要使用老版本的`.proto`，这可能会导致严重的问题，包括数据损坏、隐私漏洞等等。要确保不发生这种事情，一种有效的做法是，将废弃的枚举的数值指定为保留。废弃枚举的名称也一样应该保留，避免在JSON序列化操作中引起类似问题。任何用户试图使用这些保留值时，protobuff编译器将会报错。可以使用max关键字指定保留值范围的最大值。
+> 如果通过完全删除枚举条目或将其注释掉来更新枚举类型，那么将来对该类型进行更新时可能会重用该枚举的数值。如果又要使用老版本的`.proto`，这可能会导致严重的问题，包括数据损坏、隐私漏洞等等。要确保不发生这种事情，一种有效的做法是，将废弃的枚举的数值指定为保留。废弃枚举的名称也一样应该保留，避免在JSON序列化操作中引起类似问题。任何用户试图使用这些保留值时，protobuf编译器将会报错。可以使用max关键字指定保留值范围的最大值。
 
 ```protobuf
 enum Foo {
@@ -488,7 +488,7 @@ If an existing message type no longer meets all your needs – for example, you'
 未知字段。
 
 Unknown fields are well-formed protocol buffer serialized data representing fields that the parser does not recognize. For example, when an old binary parses data sent by a new binary with new fields, those new fields become unknown fields in the old binary.
-> 未知字段是格式良好的protobuff序列化数据中用来表示解析器无法识别的字段。例如，当旧二进制文件解析新二进制文件发送的带有新字段的数据时，这些新字段在旧二进制文件中成为未知字段。
+> 未知字段是格式良好的protobuf序列化数据中用来表示解析器无法识别的字段。例如，当旧二进制文件解析新二进制文件发送的带有新字段的数据时，这些新字段在旧二进制文件中成为未知字段。
 
 Originally, proto3 messages always discarded unknown fields during parsing, but in version 3.5 we reintroduced the preservation of unknown fields to match the proto2 behavior. In versions 3.5 and later, unknown fields are retained during parsing and included in the serialized output.
 > 最初，proto3消息总是在解析过程中丢弃未知字段，但在3.5版本中，我们重新引入了保存未知字段的功能，以匹配proto2行为。在3.5及更高版本中，解析期间将保留未知字段，并将其包含在序列化输出中。
@@ -655,7 +655,7 @@ Tag Reuse Issues
 映射集合。
 
 If you want to create an associative map as part of your data definition, protocol buffers provides a handy shortcut syntax:
-> 如果希望创建关联映射作为数据定义的一部分，protobuff提供了一种方便的快捷语法:
+> 如果希望创建关联映射作为数据定义的一部分，protobuf提供了一种方便的快捷语法:
 
 ```protobuf
 map<key_type, value_type> map_field = N;
@@ -709,7 +709,7 @@ repeated MapFieldEntry map_field = N;
 ```
 
 Any protocol buffers implementation that supports maps must both produce and accept data that can be accepted by the above definition.
-> 任何支持map的protobuff实现都必须产生和接受上述定义可以接受的数据。
+> 任何支持map的protobuf实现都必须产生和接受上述定义可以接受的数据。
 
 # Packages
 包定义。
@@ -758,16 +758,16 @@ The way a package specifier affects the generated code depends on your chosen la
 包和名称的解析。
 
 Type name resolution in the protocol buffer language works like C++: first the innermost scope is searched, then the next-innermost, and so on, with each package considered to be "inner" to its parent package. A leading '.' (for example, .foo.bar.Baz) means to start from the outermost scope instead.
-> protobuff语言中的类型名称解析工作原理类似于C++: 首先搜索最内层的作用域，然后是第二层的作用域，依此类推，每个包都被认为是其父包的“内部”。首位是`.`(例如，`.foo.bar.Baz`)表示从最外层的作用域开始。
+> protobuf语言中的类型名称解析工作原理类似于C++: 首先搜索最内层的作用域，然后是第二层的作用域，依此类推，每个包都被认为是其父包的“内部”。首位是`.`(例如，`.foo.bar.Baz`)表示从最外层的作用域开始。
 
 The protocol buffer compiler resolves all type names by parsing the imported .proto files. The code generator for each language knows how to refer to each type in that language, even if it has different scoping rules.
-> protobuff编译器通过解析导入的`.proto`文件来解析所有类型名。每种语言的代码生成器都知道如何引用该语言中的每种类型，即使它有不同的作用域规则。
+> protobuf编译器通过解析导入的`.proto`文件来解析所有类型名。每种语言的代码生成器都知道如何引用该语言中的每种类型，即使它有不同的作用域规则。
 
 # Defining Services
 定义服务。
 
 If you want to use your message types with an RPC (Remote Procedure Call) system, you can define an RPC service interface in a .proto file and the protocol buffer compiler will generate service interface code and stubs in your chosen language. So, for example, if you want to define an RPC service with a method that takes your SearchRequest and returns a SearchResponse, you can define it in your .proto file as follows:
-> 如果要在RPC(Remote Procedure Call, 远程过程调用)系统中使用protobuff消息类型，可以在`.proto`文件中定义RPC服务接口，protobuff编译器将用对应的语言生成服务接口代码和存根。例如，在`.proto`中定义一个RPC服务中的一个方法，该方法接受`SearchRequest`并返回`SearchResponse`，如下所示:
+> 如果要在RPC(Remote Procedure Call, 远程过程调用)系统中使用protobuf消息类型，可以在`.proto`文件中定义RPC服务接口，protobuf编译器将用对应的语言生成服务接口代码和存根。例如，在`.proto`中定义一个RPC服务中的一个方法，该方法接受`SearchRequest`并返回`SearchResponse`，如下所示:
 
 ```protobuf
 service SearchService {
@@ -776,13 +776,47 @@ service SearchService {
 ```
 
 The most straightforward RPC system to use with protocol buffers is gRPC: a language- and platform-neutral open source RPC system developed at Google. gRPC works particularly well with protocol buffers and lets you generate the relevant RPC code directly from your .proto files using a special protocol buffer compiler plugin.
-> 在RPC中使用protobuff最直接的方式就是使用gRPC: 一个谷歌开发的与语言和平台无关的开源RPC系统。gRPC在protobuf支持方面特别好，它允许您使用一个特殊的protobuf编译器插件直接从`.proto`文件生成相关的RPC代码。
+> 在RPC中使用protobuf最直接的方式就是使用gRPC: 一个谷歌开发的与语言和平台无关的开源RPC系统。gRPC在protobuf支持方面特别好，它允许您使用一个特殊的protobuf编译器插件直接从`.proto`文件生成相关的RPC代码。
 
 If you don't want to use gRPC, it's also possible to use protocol buffers with your own RPC implementation. You can find out more about this in the Proto2 Language Guide.
 > 如果不想使用gRPC，也可以在自己的RPC实现中使用protobuf。可以在Proto2语言指南中找到更多关于这方面的信息。
 
 There are also a number of ongoing third-party projects to develop RPC implementations for Protocol Buffers. For a list of links to projects we know about, see the third-party add-ons wiki page.
 > 还有许多正在进行的第三方项目为protobuf开发RPC实现。有关我们所知道的项目链接列表，请参见第三方插件wiki页面。
+
+# JSON Mapping
+json映射。
+
+Proto3 supports a canonical encoding in JSON, making it easier to share data between systems. The encoding is described on a type-by-type basis in the table below.
+> Proto3支持JSON中的规范编码，使系统间共享数据更容易。下表中描述了基于类型的编码。
+
+If a value is missing in the JSON-encoded data or if its value is null, it will be interpreted as the appropriate default value when parsed into a protocol buffer. If a field has the default value in the protocol buffer, it will be omitted in the JSON-encoded data by default to save space. An implementation may provide options to emit fields with default values in the JSON-encoded output.
+> 如果json编码的数据中缺少一个值，或者它的值为空，那么在解析到protobuf时，它将被解释为适当的默认值。如果某个字段在protobuf中具有默认值，则默认情况下将在json编码的数据中省略该字段，以节省空间。可以通过选项控制在json中输出字段默认值。
+> 
+> `An implementation may provide options to emit fields with default values in the JSON-encoded output.`这句话的主语`An implementation`也不知道是不是说的Proto3的JSON实现。。。
+
+| proto3 | JSON | JSON example | Notes |
+| --- | --- | --- | --- |
+| message | object | {"fooBar": v, "g": null, …} | <div style="width: 400pt">Generates JSON objects. Message field names are mapped to lowerCamelCase and become JSON object keys. If the json_name field option is specified, the specified value will be used as the key instead. Parsers accept both the lowerCamelCase name (or the one specified by the json_name option) and the original proto field name. null is an accepted value for all field types and treated as the default value of the corresponding field type.<br>生成JSON对象。默认将消息字段名映射为驼峰风格的JSON对象键。如果指定了`json_name`字段选项，则指定的值将被用作键。解析器接受驼峰风格名称(或`json_name`选项指定的名称)和原始的proto字段名称。null是所有字段类型都接受的值，并被视为对应字段类型的默认值。</div> |
+| enum | string | "FOO_BAR" | The name of the enum value as specified in proto is used. Parsers accept both enum names and integer values.<br>使用proto中指定的enum值的名称。解析器接受enum名称和整数值。 |
+| map<K,V> | object | {"k": v, …} | All keys are converted to strings.<br>proto中map的键被转为json中的字符串作为json对象键。 |
+| repeated V | array | [v, …] | null is accepted as the empty list [].<br>Null被转为json的空列表。 |
+| bool | true, false | true, false |  |
+| string | string | "Hello World!" |  |
+| bytes | base64 string | "YWJjMTIzIT8kKiYoKSctPUB+" | JSON value will be the data encoded as a string using standard base64 encoding with paddings. Either standard or URL-safe base64 encoding with/without paddings are accepted.<br>使用带填充的标准BASE64对proto的bytes做编码转为json的值。无论是标准Base64还是URL安全的Base64，无论是带填充还是不带填充，都支持。 |
+| int32, fixed32, uint32 | number | 1, -10, 0 | JSON value will be a decimal number. Either numbers or strings are accepted.<br>JSON值将是一个十进制数。可以接受数字或字符串。 |
+| int64, fixed64, uint64 | string | "1", "-10" | JSON value will be a decimal string. Either numbers or strings are accepted.<br>JSON值将是一个十进制字符串。可以接受数字或字符串。 |
+| float, double | number | 1.1, -10.0, 0, "NaN", "Infinity" | JSON value will be a number or one of the special string values "NaN", "Infinity", and "-Infinity". Either numbers or strings are accepted. Exponent notation is also accepted. -0 is considered equivalent to 0.<br>JSON值将是一个数字或特殊字符串值，比如`NaN`、`Infinity`和`-Infinity`中的一个。可以接受数字或字符串。指数表示法也被接受。-0等同于0。 |
+| Any | object | {"@type": "url", "f": v, … } | If the Any contains a value that has a special JSON mapping, it will be converted as follows: {"@type": xxx, "value": yyy}. Otherwise, the value will be converted into a JSON object, and the "@type" field will be inserted to indicate the actual data type.<br>如果Any包含一个具有特殊JSON映射的值，它将被转换为如下方式:{"@type": xxx， "value": yyy}。否则，该值将被转换为一个JSON对象，并插入“@type”字段以指示实际的数据类型。 |
+| Timestamp | string | "1972-01-01T10:00:20.021Z" | Uses RFC 3339, where generated output will always be Z-normalized and uses 0, 3, 6 or 9 fractional digits. Offsets other than "Z" are also accepted.<br>使用`RFC 3339`标准的时间格式，其输出将始终是`Z-normalized`的，并保留0/3/6/9位小数。除"Z"以外的时区也可以接受。(Z代表时区+0000) |
+| Duration | string | "1.000340012s", "1s" | Generated output always contains 0, 3, 6, or 9 fractional digits, depending on required precision, followed by the suffix "s". Accepted are any fractional digits (also none) as long as they fit into nano-seconds precision and the suffix "s" is required.<br>生成的输出总是保留0/3/6/9位小数，这取决于所需的精度，后面跟着后缀`s`。接受任何符合纳秒精度的小数(也可以为零)，只要它们后缀带`s`。 |
+| Struct | object | { … } | Any JSON object. See struct.proto.<br>任何json对象，参考`struct.proto` |
+| Wrapper types | various types | 2, "2", "foo", true, "true", null, 0, … | Wrappers use the same representation in JSON as the wrapped primitive type, except that null is allowed and preserved during data conversion and transfer.<br>包装器在JSON中使用与包装的原语类型相同的表示形式，只是在数据转换和传输期间允许并保留null。 |
+| FieldMask | string | "f.fooBar,h" | See field_mask.proto.<br>参考`field_mask.proto` |
+| ListValue | array | [foo, bar, …] |  |
+| Value | value |  | Any JSON value. Check google.protobuf.Value for details.<br>任意json值。查阅`google.protobuf.Value`获取更多信息。 |
+| NullValue | null |  | JSON null |
+| Empty | object | {} | An empty JSON object |
 
 
 
