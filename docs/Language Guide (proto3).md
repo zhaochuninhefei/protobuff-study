@@ -49,21 +49,23 @@ Message fields can be one of the following:
 > 消息字段可以是以下字段之一:
 
 - `singular`: a well-formed message can have zero or one of this field (but not more than one). When using proto3 syntax, this is the default field rule when no other field rules are specified for a given field. You cannot determine whether it was parsed from the wire. It will be serialized to the wire unless it is the default value. For more on this subject, see Field Presence.
-  > 单数: 格式良好的消息可以有0个或1个该字段(但不能超过一个)。在`proto3`中，singular是默认字段规则。protobuff无法确定是否已经解析某个singular字段，singular字段只有在非默认值时才会被序列化。有关此主题的更多信息，请参见`Field Presence`。
+  > 单数字段: 如果一个字段是单数字段，那么格式良好的消息里只能有0个或1个该字段。在`proto3`中，singular是默认字段规则。protobuff无法确定是否已经解析某个单数字段，单数字段只有在非默认值时才会被序列化。有关此主题的更多信息，请参见`Field Presence`。
   > 
-  > 关于singular字段的解析和序列化的说明，`You cannot determine whether it was parsed from the wire. It will be serialized to the wire unless it is the default value.`这两句话中使用了`wire`，`wire`在这里的意思应该是指`wire protocol`，点到点的通信抽象协议，一种数据传输机制，习惯于被用来描述信息位于应用层上的一种通用表现形式，是一种应用层上的通用协议而非各类应用程序的通用型对象描述语意。在这里可以简单理解为一种用于传输的二进制数据格式。
+  > 关于单数字段的解析和序列化的说明，`You cannot determine whether it was parsed from the wire. It will be serialized to the wire unless it is the default value.`这两句话中使用了`wire`，`wire`在这里的意思应该是指`wire protocol`，点到点的通信抽象协议，一种数据传输机制，习惯于被用来描述信息位于应用层上的一种通用表现形式，是一种应用层上的通用协议而非各类应用程序的通用型对象描述语意。在protobuff中的`wire`是想强调序列化或解析的目标是一种用于传输的二进制数据格式，而不是文本格式(protobuff的消息也可以是文本格式)。后续的翻译中，如果没有明确二进制格式与文本格式的区别，则默认就是二进制格式的消息。
 
 - `optional`: the same as singular, except that you can check to see if the value was explicitly set. An optional field is in one of two possible states:
   - the field is set, and contains a value that was explicitly set or parsed from the wire. It will be serialized to the wire.
   - the field is unset, and will return the default value. It will not be serialized to the wire.
-  > 可选:与单数相同，只是可以检查是否显式设置了值。可选字段有两种可能的状态:
+  > 可选字段: 与单数字段基本一样，但可以检查是否对其做了显式设值。可选字段有两种可能的状态:
   > - 该字段已设置，并包含显式设置或解析的值。它将被序列化。
   > - 该字段未设置，将返回默认值。它不会被序列化。
+  > 
+  > 感觉可选字段和单数字段没什么区别，都可以不设值，不设值时都不会被序列化，解析时直接使用默认值。只是可选字段可以检查有没有显式设值。
 
 - `repeated`: this field type can be repeated zero or more times in a well-formed message. The order of the repeated values will be preserved.
-  > 重复:该字段类型可以在格式良好的消息中重复0次或多次。重复值的顺序将被保留。
+  > 重复字段: 该类型字段可以在格式良好的消息中重复0次或多次。重复值的顺序将被保留。
   > 
-  > `repeated`字段对应各种变成语言中的数组或集合等。
+  > 重复字段对应各种编程语言中的数组、列表等类型。
 
 - `map`: this is a paired key/value field type. See Maps for more on this field type.
   > 映射：这是一个配对的键/值字段类型。有关此字段类型的更多信息，请参见`Maps`。
@@ -474,7 +476,7 @@ If an existing message type no longer meets all your needs – for example, you'
   > `fixed32`与`sfixed32`兼容，`fixed64`与`sfixed64`兼容。
 
 - For string, bytes, and message fields, singular fields are compatible with repeated fields. Given serialized data of a repeated field as input, clients that expect this field to be singular will take the last input value if it's a primitive type field or merge all input elements if it's a message type field. Note that this is not generally safe for numeric types, including bools and enums. Repeated fields of numeric types can be serialized in the packed format, which will not be parsed correctly when a singular field is expected.
-  > 对于`string`、`bytes`和嵌套的message字段来说，singular字段与重复字段是兼容的。给定一个重复字段的序列化数据作为输入，期望该字段为singular的客户机将接受最后一个输入值(如果它是一个基本类型字段)或合并所有输入元素(如果它是一个message类型字段)。注意，这对于数字类型(包括bool和enum)通常不安全。数值类型的重复字段可以用打包格式做序列化，当期望作为singular字段接收时，将无法正确解析其格式。
+  > 对于`string`、`bytes`和嵌套的message字段来说，单数字段与重复字段是兼容的。给定一个重复字段的序列化数据作为输入，期望该字段为单数字段的客户机将接受最后一个输入值(如果它是一个基本类型字段)或合并所有输入元素(如果它是一个message类型字段)。注意，这对于数字类型(包括bool和enum)通常不安全。数值类型的重复字段会用打包格式做序列化，当期望作为单数字段接收时，将无法正确解析其格式。
 
 - enum is compatible with int32, uint32, int64, and uint64 in terms of wire format (note that values will be truncated if they don't fit). However be aware that client code may treat them differently when the message is deserialized: for example, unrecognized proto3 enum types will be preserved in the message, but how this is represented when the message is deserialized is language-dependent. Int fields always just preserve their value.
   > `enum`在通信格式上兼容`int32`, `uint32`, `int64`, 和`uint64`(注意，如果值不适合，将被截断)。然而，请注意，当消息被反序列化时，客户端代码可能会以不同的方式对待它们: 例如，无法识别的proto3 enum类型将保留在消息中，但反序列化时这些无法识别的enum如何表示则取决于具体的语言。Int字段总是只保留它们的值。
@@ -565,7 +567,7 @@ message SampleMessage {
 ```
 
 You then add your oneof fields to the oneof definition. You can add fields of any type, except map fields and repeated fields.
-> 然后就可以将oneof的成员字段加入oneof定义，除了map和repeated字段，oneof成员字段可以使用任何其他类型。
+> 然后就可以将oneof的成员字段加入oneof定义，除了map和重复字段，oneof成员字段可以使用任何其他类型。
 
 In your generated code, oneof fields have the same getters and setters as regular fields. You also get a special method for checking which value (if any) in the oneof is set. You can find out more about the oneof API for your chosen language in the relevant API reference.
 > oneof字段与普通字段一样具有getters和setters。另外oneof还有一个特殊的方法用于检查哪个成员被设值了。你可以在相关语言的`API reference`中找到更多关于oneof的API。
@@ -590,7 +592,7 @@ CHECK(!message.has_name());
   > 如果解析器解析到同一个oneof的多个成员，则在解析后的消息中只使用最后一个看到的成员。
 
 - A oneof cannot be repeated.
-  > oneof类型字段不能重复。
+  > oneof类型字段不能作为重复字段使用。
 
 - Reflection APIs work for oneof fields.
   > 反射API可以用于oneof字段。
@@ -649,5 +651,64 @@ Tag Reuse Issues
   >
   > 所以移动常规字段有什么问题呢？跟`Tag Reuse`有啥关系呢？
 
+# Maps
+映射集合。
+
+If you want to create an associative map as part of your data definition, protocol buffers provides a handy shortcut syntax:
+> 如果希望创建关联映射作为数据定义的一部分，protobuff提供了一种方便的快捷语法:
+
+```protobuf
+map<key_type, value_type> map_field = N;
+```
+
+...where the key_type can be any integral or string type (so, any scalar type except for floating point types and bytes). Note that enum is not a valid key_type. The value_type can be any type except another map.
+> 其中键类型可以是任何整数类型或字符串类型(即，除了浮点类型和字节之外的任何标量类型)。注意，enum不是有效的键类型。值类型可以是除map之外的任何类型。
+
+So, for example, if you wanted to create a map of projects where each Project message is associated with a string key, you could define it like this:
+> 例如，创建一个项目映射，其中每个项目消息都与一个字符串键相关联，则可以像这样定义它:
+
+```protobuf
+map<string, Project> projects = 3;
+```
+
+- Map fields cannot be repeated.
+  > map字段不能作为重复字段使用。
+
+- Wire format ordering and map iteration ordering of map values are undefined, so you cannot rely on your map items being in a particular order.
+  > map的values在二进制格式消息中的顺序，以及内存中的迭代顺序都没有定义，因此不能认为map中的元素有某种特定的顺序。
+
+- When generating text format for a .proto, maps are sorted by key. Numeric keys are sorted numerically.
+  > 当为`.proto`创建文本格式消息时，map会根据键值排序，对于数字类型的键值就按照数字顺序排序。
+  > 
+  > json格式消息是否认为是文本格式?
+
+- When parsing from the wire or when merging, if there are duplicate map keys the last key seen is used. When parsing a map from text format, parsing may fail if there are duplicate keys.
+  > map中的键值重复的话，在二进制消息和文本消息中的表现是不一样的。对于二进制消息的解析或合并，会使用重复键值中的后一个，覆盖前者。而对于文本格式消息的解析，键值重复会引起解析错误。
+
+- If you provide a key but no value for a map field, the behavior when the field is serialized is language-dependent. In C++, Java, Kotlin, and Python the default value for the type is serialized, while in other languages nothing is serialized.
+  > 如果向map字段提供了key却没有提供value，那么序列化该字段时的行为是依赖于具体语言的。在C++、Java、Kotlin和Python中，会根据value类型的默认值做序列化。而在其他语言中什么都没有序列化。
+  >
+  > `nothing is serialized`如何理解？是key和value都没有被序列化？还是只有value没有被序列化？讲道理，map里每个key就应该映射到一个非空的value，value为空的话就不应该有对应的key。所以我偏向于理解为连key都不存在，即key和value都没有序列化。
+
+The generated map API is currently available for all proto3 supported languages. You can find out more about the map API for your chosen language in the relevant API reference.
+> 目前map的API文档对所有proto3支持的语言都是有效的。你可以在对应语言的`API reference`里找到更多关于map的API信息。
+
+## Backwards compatibility
+向后兼容性。
+
+The map syntax is equivalent to the following on the wire, so protocol buffers implementations that do not support maps can still handle your data:
+> map在语法上等价于二进制消息上的下列写法，因此即使不支持map的protbuff也仍然能处理map数据:
+
+```protobuf
+message MapFieldEntry {
+  key_type key = 1;
+  value_type value = 2;
+}
+
+repeated MapFieldEntry map_field = N;
+```
+
+Any protocol buffers implementation that supports maps must both produce and accept data that can be accepted by the above definition.
+> 任何支持map的protobuff实现都必须产生和接受上述定义可以接受的数据。
 
 
