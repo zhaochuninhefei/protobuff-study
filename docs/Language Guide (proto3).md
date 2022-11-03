@@ -763,5 +763,26 @@ Type name resolution in the protocol buffer language works like C++: first the i
 The protocol buffer compiler resolves all type names by parsing the imported .proto files. The code generator for each language knows how to refer to each type in that language, even if it has different scoping rules.
 > protobuff编译器通过解析导入的`.proto`文件来解析所有类型名。每种语言的代码生成器都知道如何引用该语言中的每种类型，即使它有不同的作用域规则。
 
+# Defining Services
+定义服务。
+
+If you want to use your message types with an RPC (Remote Procedure Call) system, you can define an RPC service interface in a .proto file and the protocol buffer compiler will generate service interface code and stubs in your chosen language. So, for example, if you want to define an RPC service with a method that takes your SearchRequest and returns a SearchResponse, you can define it in your .proto file as follows:
+> 如果要在RPC(Remote Procedure Call, 远程过程调用)系统中使用protobuff消息类型，可以在`.proto`文件中定义RPC服务接口，protobuff编译器将用对应的语言生成服务接口代码和存根。例如，在`.proto`中定义一个RPC服务中的一个方法，该方法接受`SearchRequest`并返回`SearchResponse`，如下所示:
+
+```protobuf
+service SearchService {
+  rpc Search(SearchRequest) returns (SearchResponse);
+}
+```
+
+The most straightforward RPC system to use with protocol buffers is gRPC: a language- and platform-neutral open source RPC system developed at Google. gRPC works particularly well with protocol buffers and lets you generate the relevant RPC code directly from your .proto files using a special protocol buffer compiler plugin.
+> 在RPC中使用protobuff最直接的方式就是使用gRPC: 一个谷歌开发的与语言和平台无关的开源RPC系统。gRPC在protobuf支持方面特别好，它允许您使用一个特殊的protobuf编译器插件直接从`.proto`文件生成相关的RPC代码。
+
+If you don't want to use gRPC, it's also possible to use protocol buffers with your own RPC implementation. You can find out more about this in the Proto2 Language Guide.
+> 如果不想使用gRPC，也可以在自己的RPC实现中使用protobuf。可以在Proto2语言指南中找到更多关于这方面的信息。
+
+There are also a number of ongoing third-party projects to develop RPC implementations for Protocol Buffers. For a list of links to projects we know about, see the third-party add-ons wiki page.
+> 还有许多正在进行的第三方项目为protobuf开发RPC实现。有关我们所知道的项目链接列表，请参见第三方插件wiki页面。
+
 
 
