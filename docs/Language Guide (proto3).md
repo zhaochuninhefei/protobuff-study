@@ -711,4 +711,57 @@ repeated MapFieldEntry map_field = N;
 Any protocol buffers implementation that supports maps must both produce and accept data that can be accepted by the above definition.
 > 任何支持map的protobuff实现都必须产生和接受上述定义可以接受的数据。
 
+# Packages
+包定义。
+
+You can add an optional package specifier to a .proto file to prevent name clashes between protocol message types.
+> 可以向`.proto`文件中添加可选的包说明符，以防止消息类型之间的名称冲突。
+
+```protobuf
+package foo.bar;
+message Open { ... }
+```
+
+You can then use the package specifier when defining fields of your message type:
+> 然后，在定义消息类型的字段时可以使用包说明符:
+
+```protobuf
+message Foo {
+  ...
+  foo.bar.Open open = 1;
+  ...
+}
+```
+
+The way a package specifier affects the generated code depends on your chosen language:
+> 包说明符影响生成的代码的方式取决于所选择的语言:
+
+- In C++ the generated classes are wrapped inside a C++ namespace. For example, Open would be in the namespace foo::bar.
+  > 在C++中，生成的类被包装在C++命名空间中。例如，`Open`将位于命名空间`foo::bar`中。
+
+- In Java and Kotlin, the package is used as the Java package, unless you explicitly provide an option java_package in your .proto file.
+  > 在Java和Kotlin中，该包被用作Java的包，除非在`.proto`文件中显式地提供一个选项`java_package`。
+
+- In Python, the package directive is ignored, since Python modules are organized according to their location in the file system.
+  > 在Python中，包指令会被忽略，因为Python模块是根据它们在文件系统中的位置组织的。
+
+- In Go, the package is used as the Go package name, unless you explicitly provide an option go_package in your .proto file.
+  > 在Go中，包被用作Go包名，除非在`.proto`文件中显式地提供一个选项`go_package`。
+
+- In Ruby, the generated classes are wrapped inside nested Ruby namespaces, converted to the required Ruby capitalization style (first letter capitalized; if the first character is not a letter, PB_ is prepended). For example, Open would be in the namespace Foo::Bar.
+  > 在Ruby中，生成的类被封装在嵌套的Ruby名称空间中，转换为所需的Ruby大写样式(首字母大写;如果第一个字符不是字母，则在前面加上PB)。例如，`Open`将位于命名空间`Foo::Bar`中。
+
+- In C# the package is used as the namespace after converting to PascalCase, unless you explicitly provide an option csharp_namespace in your .proto file. For example, Open would be in the namespace Foo.Bar.
+  > 在C#中，这个包在转换为PascalCase后被用作命名空间，除非你在`.proto`文件中显式地提供一个选项`csharp_namespace`。例如，Open将位于名称空间`Foo.Bar`中。
+
+## Packages and Name Resolution
+包和名称的解析。
+
+Type name resolution in the protocol buffer language works like C++: first the innermost scope is searched, then the next-innermost, and so on, with each package considered to be "inner" to its parent package. A leading '.' (for example, .foo.bar.Baz) means to start from the outermost scope instead.
+> protobuff语言中的类型名称解析工作原理类似于C++: 首先搜索最内层的作用域，然后是第二层的作用域，依此类推，每个包都被认为是其父包的“内部”。首位是`.`(例如，`.foo.bar.Baz`)表示从最外层的作用域开始。
+
+The protocol buffer compiler resolves all type names by parsing the imported .proto files. The code generator for each language knows how to refer to each type in that language, even if it has different scoping rules.
+> protobuff编译器通过解析导入的`.proto`文件来解析所有类型名。每种语言的代码生成器都知道如何引用该语言中的每种类型，即使它有不同的作用域规则。
+
+
 
