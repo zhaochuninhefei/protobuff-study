@@ -51,7 +51,7 @@ Message fields can be one of the following:
 - `singular`: a well-formed message can have zero or one of this field (but not more than one). When using proto3 syntax, this is the default field rule when no other field rules are specified for a given field. You cannot determine whether it was parsed from the wire. It will be serialized to the wire unless it is the default value. For more on this subject, see Field Presence.
   > 单数: 格式良好的消息可以有0个或1个该字段(但不能超过一个)。在`proto3`中，singular是默认字段规则。protobuff无法确定是否已经解析某个singular字段，singular字段只有在非默认值时才会被序列化。有关此主题的更多信息，请参见`Field Presence`。
   > 
-  > 关于singular字段的解析和序列化的说明，`You cannot determine whether it was parsed from the wire. It will be serialized to the wire unless it is the default value.`这两句话不是特别理解什么意思，大概是"singular字段如果没有塞值或者塞的默认值的话，就不会被序列化"的意思。`wire`在这里应该是泛指用于传输、存储序列化结果的"线路"。
+  > 关于singular字段的解析和序列化的说明，`You cannot determine whether it was parsed from the wire. It will be serialized to the wire unless it is the default value.`这两句话中使用了`wire`，`wire`在这里的意思应该是指`wire protocol`，点到点的通信抽象协议，一种数据传输机制，习惯于被用来描述信息位于应用层上的一种通用表现形式，是一种应用层上的通用协议而非各类应用程序的通用型对象描述语意。在这里可以简单理解为一种用于传输的二进制数据格式。
 
 - `optional`: the same as singular, except that you can check to see if the value was explicitly set. An optional field is in one of two possible states:
   - the field is set, and contains a value that was explicitly set or parsed from the wire. It will be serialized to the wire.
@@ -62,6 +62,8 @@ Message fields can be one of the following:
 
 - `repeated`: this field type can be repeated zero or more times in a well-formed message. The order of the repeated values will be preserved.
   > 重复:该字段类型可以在格式良好的消息中重复0次或多次。重复值的顺序将被保留。
+  > 
+  > `repeated`字段对应各种变成语言中的数组或集合等。
 
 - `map`: this is a paired key/value field type. See Maps for more on this field type.
   > 映射：这是一个配对的键/值字段类型。有关此字段类型的更多信息，请参见`Maps`。
@@ -457,7 +459,7 @@ If an existing message type no longer meets all your needs – for example, you'
   > 只要字段号不在更新的消息类型中再次使用，就可以删除字段。你可以重命名该字段，比如添加前缀`OBSOLETE_`。或者删除字段之后保留字段编号，以确保将来不会意外重用该字段编号。
 
 - int32, uint32, int64, uint64, and bool are all compatible – this means you can change a field from one of these types to another without breaking forwards- or backwards-compatibility. If a number is parsed from the wire which doesn't fit in the corresponding type, you will get the same effect as if you had cast the number to that type in C++ (for example, if a 64-bit number is read as an int32, it will be truncated to 32 bits).
-  > `int32`, `uint32`, `int64`, `uint64`, 以及`bool`类型都是兼容的，这意味着你可以将字段从其中一种类型更改为另一种类型，而不会破坏向前或向后兼容性。如果从连线中解析的数字不符合相应的类型，您将得到与在C++中将该数字强制转换为该类型相同的效果(例如，如果将64位数字读为一个int32，它将被截断为32位)。
+  > `int32`, `uint32`, `int64`, `uint64`, 以及`bool`类型都是兼容的，这意味着你可以将字段从其中一种类型更改为另一种类型，而不会破坏向前或向后兼容性。如果解析的数字不符合相应的类型，您将得到与在C++中将该数字强制转换为该类型相同的效果(例如，如果将64位数字读为一个int32，它将被截断为32位)。
 
 - sint32 and sint64 are compatible with each other but are not compatible with the other integer types.
   > `sint32`和`sint64`彼此兼容，但不兼容其他整数类型。
@@ -475,7 +477,7 @@ If an existing message type no longer meets all your needs – for example, you'
   > 对于`string`、`bytes`和嵌套的message字段来说，singular字段与重复字段是兼容的。给定一个重复字段的序列化数据作为输入，期望该字段为singular的客户机将接受最后一个输入值(如果它是一个基本类型字段)或合并所有输入元素(如果它是一个message类型字段)。注意，这对于数字类型(包括bool和enum)通常不安全。数值类型的重复字段可以用打包格式做序列化，当期望作为singular字段接收时，将无法正确解析其格式。
 
 - enum is compatible with int32, uint32, int64, and uint64 in terms of wire format (note that values will be truncated if they don't fit). However be aware that client code may treat them differently when the message is deserialized: for example, unrecognized proto3 enum types will be preserved in the message, but how this is represented when the message is deserialized is language-dependent. Int fields always just preserve their value.
-  > `enum`兼容`int32`, `uint32`, `int64`, 和`uint64`的线格式(注意，如果值不适合，将被截断)。然而，请注意，当消息被反序列化时，客户端代码可能会以不同的方式对待它们: 例如，无法识别的proto3 enum类型将保留在消息中，但反序列化时这些无法识别的enum如何表示则取决于具体的语言。Int字段总是只保留它们的值。
+  > `enum`在通信格式上兼容`int32`, `uint32`, `int64`, 和`uint64`(注意，如果值不适合，将被截断)。然而，请注意，当消息被反序列化时，客户端代码可能会以不同的方式对待它们: 例如，无法识别的proto3 enum类型将保留在消息中，但反序列化时这些无法识别的enum如何表示则取决于具体的语言。Int字段总是只保留它们的值。
 
 - Changing a single optional field or extension into a member of a new oneof is safe and binary compatible. Moving multiple fields into a new oneof may be safe if you are sure that no code sets more than one at a time. Moving any fields into an existing oneof is not safe. Likewise, changing a single field oneof to an optional field or extension is safe.
   > 将单个`optional`字段或扩展更改为新的`oneof`是安全且二进制兼容的。如果没有代码同时给某几个字段中的多个字段设值的话，那么将这几个字段改为一个新的`oneof`也是安全的。任何将字段加入即存的`oneof`都是不安全的。同样的，将一个单字段的`oneof`改为`optional`字段或扩展也是安全的。
@@ -532,6 +534,120 @@ for (const google::protobuf::Any& detail : status.details()) {
 
 If you are already familiar with proto2 syntax, the Any can hold arbitrary proto3 messages, similar to proto2 messages which can allow extensions.
 > 如果您已经熟悉了proto2语法，Any可以保存任意的proto3消息，类似于允许扩展的proto2消息。
+
+# Oneof
+Oneof消息类型。
+
+If you have a message with many fields and where at most one field will be set at the same time, you can enforce this behavior and save memory by using the oneof feature.
+> 如果您有一个包含多个字段的消息，并且同时最多设置一个字段，您可以通过使用oneof特性强制执行此行为并节省内存。
+
+Oneof fields are like regular fields except all the fields in a oneof share memory, and at most one field can be set at the same time. Setting any member of the oneof automatically clears all the other members. You can check which value in a oneof is set (if any) using a special case() or WhichOneof() method, depending on your chosen language.
+> oneof字段与普通字段大致相同，除了oneof共享内存中的这些成员字段(最多可以同时设置它们中的一个)。设置oneof的任意成员将自动清除所有其他成员。您可以使用`case()`或`WhichOneof()`等方法检查哪个成员字段被设置了(如果有的话)，这取决于您所选择的语言。
+
+Note that if multiple values are set, the last set value as determined by the order in the proto will overwrite all previous ones.
+> 注意，如果设置了多次成员值，最后一个由proto中的顺序确定的成员值将覆盖之前所有的设值。
+> 
+> 什么是`the order in the proto`？ 不是程序上最后一次设值吗？
+
+## Using Oneof
+使用Oneof。
+
+To define a oneof in your .proto you use the oneof keyword followed by your oneof name, in this case test_oneof:
+> 要在`.proto`里定义一个oneof，需要使用`oneof`关键字，以及一个oneof名称，如下所示:
+
+```protobuf
+message SampleMessage {
+  oneof test_oneof {
+    string name = 4;
+    SubMessage sub_message = 9;
+  }
+}
+```
+
+You then add your oneof fields to the oneof definition. You can add fields of any type, except map fields and repeated fields.
+> 然后就可以将oneof的成员字段加入oneof定义，除了map和repeated字段，oneof成员字段可以使用任何其他类型。
+
+In your generated code, oneof fields have the same getters and setters as regular fields. You also get a special method for checking which value (if any) in the oneof is set. You can find out more about the oneof API for your chosen language in the relevant API reference.
+> oneof字段与普通字段一样具有getters和setters。另外oneof还有一个特殊的方法用于检查哪个成员被设值了。你可以在相关语言的`API reference`中找到更多关于oneof的API。
+
+## Oneof Features
+Oneof的功能。
+
+- Setting a oneof field will automatically clear all other members of the oneof. So if you set several oneof fields, only the last field you set will still have a value.
+  > 设置一个oneof字段将自动清除oneof的所有其他成员。因此，如果你设置了几个oneof字段，只有你设置的最后一个字段仍然有值。
+
+```cpp
+SampleMessage message;
+message.set_name("name");
+CHECK(message.has_name());
+// Calling mutable_sub_message() will clear the name field and will set
+// sub_message to a new instance of SubMessage with none of its fields set
+message.mutable_sub_message();
+CHECK(!message.has_name());
+```
+
+- If the parser encounters multiple members of the same oneof on the wire, only the last member seen is used in the parsed message.
+  > 如果解析器解析到同一个oneof的多个成员，则在解析后的消息中只使用最后一个看到的成员。
+
+- A oneof cannot be repeated.
+  > oneof类型字段不能重复。
+
+- Reflection APIs work for oneof fields.
+  > 反射API可以用于oneof字段。
+
+- If you set a oneof field to the default value (such as setting an int32 oneof field to 0), the "case" of that oneof field will be set, and the value will be serialized on the wire.
+  > 如果将一个oneof字段设置为默认值(例如将一个int32的oneof字段设置为0)，则该oneof字段的`case`将被设置，并且该值会被序列化。
+
+- If you're using C++, make sure your code doesn't cause memory crashes. The following sample code will crash because sub_message was already deleted by calling the set_name() method.
+  > 使用C++时，务必确保代码不会导致内存崩溃。下面的示例代码将会崩溃，因为通过调用`set_name()`方法已经删除了`sub_message`。
+
+```cpp
+SampleMessage message;
+SubMessage* sub_message = message.mutable_sub_message();
+message.set_name("name");      // Will delete sub_message
+sub_message->set_...            // Crashes here
+```
+
+- Again in C++, if you Swap() two messages with oneofs, each message will end up with the other’s oneof case: in the example below, msg1 will have a sub_message and msg2 will have a name.
+  > 同样在C++中，如果对两个oneof类型的消息执行`Swap()`操作，那么每个消息将以另一个消息的状态结束: 在下面的例子中，ms1最终具有成员`sub_message`，而ms2最终具有成员`name`。
+
+```cpp
+SampleMessage msg1;
+msg1.set_name("name");
+SampleMessage msg2;
+msg2.mutable_sub_message();
+msg1.swap(&msg2);
+CHECK(msg1.has_sub_message());
+CHECK(msg2.has_name());
+```
+
+## Backwards-compatibility issues
+向后兼容性问题。
+
+Be careful when adding or removing oneof fields. If checking the value of a oneof returns None/NOT_SET, it could mean that the oneof has not been set or it has been set to a field in a different version of the oneof. There is no way to tell the difference, since there's no way to know if an unknown field on the wire is a member of the oneof.
+> 添加或者删除oneof字段一定要谨慎。如果检查oneof字段的值时返回的是`None/NOT_SET`，那么有可能是这个oneof字段并没有被设值，但也有可能是另一个版本的`.proto`中这个oneof有另一个成员且设置的是这个成员。没有办法辨别其中的区别，因为没有办法知道数据中的未知字段是否是oneof的成员。
+
+Tag Reuse Issues
+> 标签重用问题
+> 
+> 下面三个BUG应该是目前依然存在的问题，但我不明白的是，它们跟`Tag Reuse`是什么关系？跟`向后兼容性`又有什么关系？`Tag Reuse`是这些问题的共同特征吗？感觉这里语焉不详，也没有更详细的资料链接。。。
+
+- Move fields into or out of a oneof: You may lose some of your information (some fields will be cleared) after the message is serialized and parsed. However, you can safely move a single field into a new oneof and may be able to move multiple fields if it is known that only one is ever set.
+  > 如果对oneof字段做成员的添加或移除，那么在消息被序列化和解析之后，可能会丢失一些信息，一些字段会被清除。但是，可以安全地将一个单独的字段移动到一个新的oneof字段中。如果确切地知道某些字段始终只会设置其中一个字段的值，那么也可以安全地将这些字段加入一个新的oneof。
+  > 
+  > `and may be able to move multiple fields if it is known that only one is ever set`。。。到底应该怎么理解? 目前的翻译是个人理解，但感觉是废话，这就是什么时候可以创建一个新的oneof嘛。。。不知道特地在这里强调的意义何在，只是强调oneof的成员添加/移除的BUG不包括这两种新建oneof的情况？这有必要强调吗？
+  > 
+  > 另外，这个BUG跟`Tag Reuse`有啥关系？
+
+- Delete a oneof field and add it back: This may clear your currently set oneof field after the message is serialized and parsed.
+  > 删除一个oneof字段再将其添加回去: 这可能会在消息被序列化和解析后清除当前设置的oneof字段。
+  > 
+  > 所以这个BUG跟`Tag Reuse`有啥关系？再添加的时候，oneof字段名没变？字段编号呢？
+
+- Split or merge oneof: This has similar issues to moving regular fields.
+  > 拆分或合并oneof: 这与移动常规字段有类似的问题。
+  >
+  > 所以移动常规字段有什么问题呢？跟`Tag Reuse`有啥关系呢？
 
 
 
