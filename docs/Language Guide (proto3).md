@@ -818,5 +818,26 @@ If a value is missing in the JSON-encoded data or if its value is null, it will 
 | NullValue | null |  | JSON null |
 | Empty | object | {} | An empty JSON object |
 
+## JSON options
+JSON选项。
+
+A proto3 JSON implementation may provide the following options:
+> proto3的JSON实现提供了以下选项:
+
+- Emit fields with default values: Fields with default values are omitted by default in proto3 JSON output. An implementation may provide an option to override this behavior and output fields with their default values.
+  > 输出值为默认值的字段: 在proto3的JSON输出中，默认会省略当前值为其默认值的字段。但proto3提供了一个选项来覆盖此行为，此时会输出该字段的默认值。
+
+- Ignore unknown fields: Proto3 JSON parser should reject unknown fields by default but may provide an option to ignore unknown fields in parsing.
+  > 忽略未知字段: 默认情况下，Proto3的JSON解析器会拒绝未知字段，但可以提供一个选项，在解析中忽略未知字段。
+  > 
+  > 拒绝和忽略的区别是啥? 拒绝会报错，整个消息都不解析了？而忽略则继续解析消息的其他字段？
+
+- Use proto field name instead of lowerCamelCase name: By default proto3 JSON printer should convert the field name to lowerCamelCase and use that as the JSON name. An implementation may provide an option to use proto field name as the JSON name instead. Proto3 JSON parsers are required to accept both the converted lowerCamelCase name and the proto field name.
+  > 使用proto字段名而不是驼峰风格名称: 默认情况下，proto3会将字段名转换为驼峰风格并使用它作为JSON字段名。但proto3同时提供了一个选项，可以使用proto字段名作为JSON字段名。Proto3的JSON解析器既可以接受转换后的驼峰风格名称，也可以接受proto字段名。
+
+- Emit enum values as integers instead of strings: The name of an enum value is used by default in JSON output. An option may be provided to use the numeric value of the enum value instead.
+  > 作为整数而不是字符串输出enum值: 默认情况下，在JSON输出中使用enum值的名称。可以通过一个选项来使用枚举值的数值。
+
+
 
 
