@@ -838,6 +838,81 @@ A proto3 JSON implementation may provide the following options:
 - Emit enum values as integers instead of strings: The name of an enum value is used by default in JSON output. An option may be provided to use the numeric value of the enum value instead.
   > 作为整数而不是字符串输出enum值: 默认情况下，在JSON输出中使用enum值的名称。可以通过一个选项来使用枚举值的数值。
 
+# Options
+选项，可选参数。
+
+Individual declarations in a .proto file can be annotated with a number of options. Options do not change the overall meaning of a declaration, but may affect the way it is handled in a particular context. The complete list of available options is defined in google/protobuf/descriptor.proto.
+> `.proto`文件中的单个声明可以用许多选项(可选参数)进行注解。这些选项不会改变声明的整体含义，但可能会影响在特定上下文中处理声明的方式。可用选项的完整列表定义在`google/protobuf/descriptor.proto`里。
+
+Some options are file-level options, meaning they should be written at the top-level scope, not inside any message, enum, or service definition. Some options are message-level options, meaning they should be written inside message definitions. Some options are field-level options, meaning they should be written inside field definitions. Options can also be written on enum types, enum values, oneof fields, service types, and service methods; however, no useful options currently exist for any of these.
+> 有些选项是文件级选项，这意味着它们应该编写在顶级作用域，而不是在任何消息、枚举或服务定义的内部。有些选项是消息级选项，这意味着它们应该在消息定义内部编写。有些选项是字段级别的选项，这意味着它们应该写在字段定义内部。机制上，选项也可以写在enum类型、enum值、oneof字段、service类型和service方法上，但目前还没有任何在这些类型上有效的选项。
+
+Here are a few of the most commonly used options:
+> 下面是一些最常用的选项:
+
+- java_package (file option): The package you want to use for your generated Java/Kotlin classes. If no explicit java_package option is given in the .proto file, then by default the proto package (specified using the "package" keyword in the .proto file) will be used. However, proto packages generally do not make good Java packages since proto packages are not expected to start with reverse domain names. If not generating Java or Kotlin code, this option has no effect.
+  > `java_package`(文件选项): 指定生成的`Java/Kotlin`类的包路径。如果没有在`.proto`文件中显式定义`java_package`选项，默认使用proto包(在`.proto`文件中通过`package`关键词指定)。但是，proto包通常并不是规范的Java包定义，因为proto包不像Java那样通常以反向域名(例如`com.xxx`)开始。如果不生成Java或Kotlin代码，则此选项无效。
+
+```protobuf
+option java_package = "com.example.foo";
+```
+
+- java_outer_classname (file option): The class name (and hence the file name) for the wrapper Java class you want to generate. If no explicit java_outer_classname is specified in the .proto file, the class name will be constructed by converting the .proto file name to camel-case (so foo_bar.proto becomes FooBar.java). If the java_multiple_files option is disabled, then all other classes/enums/etc. generated for the .proto file will be generated within this outer wrapper Java class as nested classes/enums/etc. If not generating Java code, this option has no effect.
+  > `java_outer_classname`(文件选项): 想要生成的Java包装类的类名(因此也是文件名)。如果没有显式给出`java_outer_classname`选项，那么默认将`.proto`文件名转换为驼峰风格名称作为Java类名使用，比如`foo_bar.proto`对应生成`FooBar.java`。如果`java_multiple_files`选项为`false`，则`.proto`文件生成的所有类/枚举等等，都将作为嵌套的类/枚举等，生成在这个Java包装类里面。如果不生成Java或Kotlin代码，则此选项无效。
+
+```protobuf
+option java_outer_classname = "Ponycopter";
+```
+
+- java_multiple_files (file option): If false, only a single .java file will be generated for this .proto file, and all the Java classes/enums/etc. generated for the top-level messages, services, and enumerations will be nested inside of an outer class (see java_outer_classname). If true, separate .java files will be generated for each of the Java classes/enums/etc. generated for the top-level messages, services, and enumerations, and the wrapper Java class generated for this .proto file won't contain any nested classes/enums/etc. This is a Boolean option which defaults to false. If not generating Java code, this option has no effect.
+  > `java_multiple_files`(文件选项): 该选项为`false`时，对应的`.proto`文件只会生成一个`.java`文件(Java包装类)，`.proto`中定义的顶级的`messages/services/enumerations`将作为内部类嵌套在Java包装类里(参考前面的选项`java_outer_classname`)。该选项为`true`时，顶级的`messages/services/enumerations`将各自生成自己的`.java`文件，而对应当前`.proto`文件的Java包装类不会包含任何嵌套的内部类。该选项是一个布尔选项，默认值是`false`。如果不生成Java或Kotlin代码，则此选项无效。
+
+```protobuf
+option java_multiple_files = true;
+```
+
+- optimize_for (file option): Can be set to SPEED, CODE_SIZE, or LITE_RUNTIME. This affects the C++ and Java code generators (and possibly third-party generators) in the following ways:
+  > `optimize_for`(文件选项): 优化选项，可以设置为`SPEED`、`CODE_SIZE`、或`LITE_RUNTIME`。通过以下方式对C++和Java的代码编译器生效(可能还有一些三方编译器):
+
+  - SPEED (default): The protocol buffer compiler will generate code for serializing, parsing, and performing other common operations on your message types. This code is highly optimized.
+    > `SPEED`(默认): 以运行时的速度为目标，protobuf编译器将为定义好的消息类型生成相关代码，包括序列化、解析和其他常见操作。这些代码经过了高度优化。
+
+  - CODE_SIZE: The protocol buffer compiler will generate minimal classes and will rely on shared, reflection-based code to implement serialialization, parsing, and various other operations. The generated code will thus be much smaller than with SPEED, but operations will be slower. Classes will still implement exactly the same public API as they do in SPEED mode. This mode is most useful in apps that contain a very large number of .proto files and do not need all of them to be blindingly fast.
+    > `CODE_SIZE`: 以更少的代码量为目标，protobuf编译器将生成最小的类，并依赖于共享的、基于反射的代码来实现序列化、解析和各种其他操作。因此，生成的代码将比使用`SPEED`要小得多，但运行起来将更慢。类仍将实现与`SPEED`模式生成的代码完全相同的公开API。适合使用这种模式的应用程序的特点应该是: 包含大量`.proto`文件，并且不需要它们全都运行得非常快。
+
+  - LITE_RUNTIME: The protocol buffer compiler will generate classes that depend only on the "lite" runtime library (libprotobuf-lite instead of libprotobuf). The lite runtime is much smaller than the full library (around an order of magnitude smaller) but omits certain features like descriptors and reflection. This is particularly useful for apps running on constrained platforms like mobile phones. The compiler will still generate fast implementations of all methods as it does in SPEED mode. Generated classes will only implement the MessageLite interface in each language, which provides only a subset of the methods of the full Message interface.
+    > `LITE_RUNTIME`: protobuf编译器将生成只依赖于`lite`运行时库(`libprotobuf-lite`而不是`libprotobuf`)的类。lite运行时比完整库要小得多(大约小一个数量级)，但省略了某些特性，如描述符和反射。这对于在手机等受限平台上运行的应用程序尤其有用。编译器仍然会像在`SPEED`模式下一样，以运行时的速度为目标，生成所有方法的快速实现。但此时生成的类将只实现对应语言中的`MessageLite`接口，该接口只提供完整`Message`接口的一个子集。
+
+```protobuf
+option optimize_for = CODE_SIZE;
+```
+
+- cc_enable_arenas (file option): Enables arena allocation for C++ generated code.
+  > `cc_enable_arenas`(文件选项): 为C++生成的代码启用`arena allocation`。
+
+- objc_class_prefix (file option): Sets the Objective-C class prefix which is prepended to all Objective-C generated classes and enums from this .proto. There is no default. You should use prefixes that are between 3-5 uppercase characters as recommended by Apple. Note that all 2 letter prefixes are reserved by Apple.
+  > `objc_class_prefix`(文件选项): 设置`Objective-C`类的前缀，该前缀会被设置到从这个`.proto`生成的所有的`Objective-C`的类和枚举中。该前缀没有默认值。应该使用苹果推荐的`3-5`个大写字符作为前缀。注意，所有两个字母的前缀都是被苹果保留了。
+
+- deprecated (field option): If set to true, indicates that the field is deprecated and should not be used by new code. In most languages this has no actual effect. In Java, this becomes a @Deprecated annotation. In the future, other language-specific code generators may generate deprecation annotations on the field's accessors, which will in turn cause a warning to be emitted when compiling code which attempts to use the field. If the field is not used by anyone and you want to prevent new users from using it, consider replacing the field declaration with a reserved statement.
+  > `deprecated`(文件选项): 废弃选项，如果设置为`true`，则表示该字段已弃用，不应由新代码使用。在大多数语言中，这没有实际效果。在`Java`中，会变为`@Deprecated`注释。将来，其他特定于语言的代码生成器可能会在字段的访问器上生成弃用注释，这将在编译试图使用该字段的代码时引发警告。如果没有人使用该字段，并且希望阻止新用户使用它，请考虑用保留语句替换该字段声明。
+
+```protobuf
+int32 old_field = 6 [deprecated = true];
+```
+
+## Custom Options
+自定义选项。
+
+Protocol Buffers also allows you to define and use your own options. This is an advanced feature which most people don't need. If you do think you need to create your own options, see the Proto2 Language Guide for details. Note that creating custom options uses extensions, which are permitted only for custom options in proto3.
+> protobuf还允许自定义选项。这是大部分场景都不需要的高级功能。如果需要自定义选项，请参考`Proto2 Language Guide`的详细信息。注意，创建自定义选项使用了扩展，在`proto3`中扩展只允许用于自定义选项。
+
+
+
+
+
+
+
+
 
 
 
