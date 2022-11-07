@@ -36,7 +36,16 @@ How do you serialize and retrieve structured data like this? There are a few way
     > 把数据序列化为XML。这种方法非常有吸引力，因为XML(在某种程度上)是人类可读的，而且许多语言都提供了相关库。如果需要与其他应用/项目共享数据，这可能是一个不错的方案。但是，众所周知，XML非常消耗存储空间的，并且其编码/解码会给应用程序带来巨大的性能消耗。此外，在XML的DOM树实现导航功能(即根据字段读写其值)通常要比在类中访问字段要复杂得多。
 
 Protocol buffers are the flexible, efficient, automated solution to solve exactly this problem. With protocol buffers, you write a .proto description of the data structure you wish to store. From that, the protocol buffer compiler creates a class that implements automatic encoding and parsing of the protocol buffer data with an efficient binary format. The generated class provides getters and setters for the fields that make up a protocol buffer and takes care of the details of reading and writing the protocol buffer as a unit. Importantly, the protocol buffer format supports the idea of extending the format over time in such a way that the code can still read data encoded with the old format.
-> protobuf恰好可以灵活、高效、自动化地解决这些问题。使用protobuf，可以编写一个`.proto`用来描述需要存储的数据结构。基于这个`.proto`文件，protobuf编译器会生成对应的类，这些类会使用高效的二进制格式实现protobuf数据的编码和解析。生成的类为对应的protobuf数据中的字段提供getter和setter操作，并负责将protobuf数据作为一个单元进行读写。重要的是，protobuf的格式支持扩展，使代码仍然可以读取那些用旧格式编码的数据。
+> protobuf恰好可以灵活、高效、自动化地解决这些问题。使用protobuf，可以编写一个`.proto`用来描述需要存储的数据结构。基于这个`.proto`文件，protobuf编译器会生成对应的类，这些类会使用高效的二进制格式实现protobuf数据的编码和解析。生成的类为对应的protobuf数据中的字段提供getter和setter操作，并负责将protobuf数据作为一个单元进行读写。重要的是，protobuf的格式支持扩展，扩展以后，那些用旧格式编码的数据仍然能够被读取。
+
+# Where to find the example code
+去哪找示例代码?
+
+Our example is a set of command-line applications for managing an address book data file, encoded using protocol buffers. The command add_person_go adds a new entry to the data file. The command list_people_go parses the data file and prints the data to the console.
+> 我们的示例是一组命令行应用程序，用于管理使用protobuf编码的地址簿数据文件。命令`add_person_go`向数据文件添加一个新条目。命令`list_people_go`解析数据文件并将数据打印到控制台。
+
+You can find the complete example in the examples directory of the GitHub repository.
+> 您可以在GitHub存储库的examples目录中找到完整的示例。
 
 
 
