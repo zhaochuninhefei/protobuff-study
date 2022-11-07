@@ -964,3 +964,20 @@ protoc --proto_path=IMPORT_PATH \
 - You must provide one or more .proto files as input. Multiple .proto files can be specified at once. Although the files are named relative to the current directory, each file must reside in one of the IMPORT_PATHs so that the compiler can determine its canonical name.
   > 必须提供一个或多个`.proto`文件作为输入。可以一次指定多个`.proto`文件。即使提供的文件名是基于当前目录的相对路径，也还是要确保这个文件在`--proto_path`所导入的目录中，以便编译器能够确定其规范路径。
 
+
+# File location
+文件位置。
+
+Prefer not to put .proto files in the same directory as other language sources. Consider creating a subpackage proto for .proto files, under the root package for your project.
+> 不要将`.proto`文件放在与其他语言源文件相同的目录中。考虑在项目的根路径下为`.proto`文件创建proto子项目。
+
+## Location Should be Language-agnostic
+文件位置应当与语言无关。
+
+When working with Java code, it's handy to put related .proto files in the same directory as the Java source. However, if any non-Java code ever uses the same protos, the path prefix will no longer make sense. So in general, put the protos in a related language-agnostic directory such as //myteam/mypackage.
+> 使用Java代码时，将相关的`.proto`文件放在与Java源相同的目录中很方便，它们与生成的Java代码使用相同的包路径。但是，如果其他非Java语言的代码也要使用相同的proto代码，则Java风格的包路径就不是很方便。因此，一般会将proto文件放入和语言无关的某个相关目录中，例如`//myteam/mypackage`。
+
+The exception to this rule is when it's clear that the protos will be used only in a Java context, such as for testing.
+> 这条规则的例外情况是，proto文件只会在Java环境中使用，比如用于测试。
+
+
