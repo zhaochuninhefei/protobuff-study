@@ -907,12 +907,60 @@ Protocol Buffers also allows you to define and use your own options. This is an 
 > protobuf还允许自定义选项。这是大部分场景都不需要的高级功能。如果需要自定义选项，请参考`Proto2 Language Guide`的详细信息。注意，创建自定义选项使用了扩展，在`proto3`中扩展只允许用于自定义选项。
 
 
+# Generating Your Classes
+生成类。
+
+To generate the Java, Kotlin, Python, C++, Go, Ruby, Objective-C, or C# code you need to work with the message types defined in a .proto file, you need to run the protocol buffer compiler protoc on the .proto. If you haven't installed the compiler, download the package and follow the instructions in the README. For Go, you also need to install a special code generator plugin for the compiler: you can find this and installation instructions in the golang/protobuf repository on GitHub.
+> 为了生成Java, Kotlin, Python, C++, Go, Ruby, Objective-C, 或者C#代码，需要在一个`.proto`文件中定义好消息类型，然后运行protobuf编译器`protoc`对`.proto`文件进行编译。如果您还没有安装编译器，请下载并按照README中的说明操作。对于Go，还需要会编译器再安装一个特殊的代码生成器插件，你可以在github上的`golang/protobuf`仓库下找到它，以及对应的安装介绍。
+
+The Protocol Compiler is invoked as follows:
+> 编译器像下面这样执行:
+
+```bash
+protoc --proto_path=IMPORT_PATH \
+  --cpp_out=DST_DIR --java_out=DST_DIR --python_out=DST_DIR \
+  --go_out=DST_DIR --ruby_out=DST_DIR --objc_out=DST_DIR --csharp_out=DST_DIR \
+  path/to/file.proto
+```
+
+- IMPORT_PATH specifies a directory in which to look for .proto files when resolving import directives. If omitted, the current directory is used. Multiple import directories can be specified by passing the --proto_path option multiple times; they will be searched in order. -I=_IMPORT_PATH_ can be used as a short form of --proto_path.
+  > `--proto_path`用于指定`.proto`文件的导入目录。如果省略，则使用当前目录。多个导入目录可以通过多个`--proto_path`选项来指定，他们将按顺序被搜查。`-I`是`--proto_path`的简写形式。
+
+- You can provide one or more output directives:
+  > 可以指定多种语言的输出位置:
+
+  - --cpp_out generates C++ code in DST_DIR. See the C++ generated code reference for more.
+    > `--cpp_out`指定C++的代码输出位置。
+
+  - --java_out generates Java code in DST_DIR. See the Java generated code reference for more.
+    > `--java_out`指定Java的代码输出位置。
+
+  - --kotlin_out generates additional Kotlin code in DST_DIR. See the Kotlin generated code reference for more.
+    > `--kotlin_out`指定Kotlin的代码输出位置。
+
+  - --python_out generates Python code in DST_DIR. See the Python generated code reference for more.
+    > `--python_out`指定Python的代码输出位置。
+
+  - --go_out generates Go code in DST_DIR. See the Go generated code reference for more.
+    > `--go_out`指定Go的代码输出位置。
+
+  - --ruby_out generates Ruby code in DST_DIR. See the Ruby generated code reference for more.
+    > `--ruby_out`指定Ruby的代码输出位置。
+
+  - --objc_out generates Objective-C code in DST_DIR. See the Objective-C generated code reference for more.
+    > `--objc_out`指定Objective-C的代码输出位置。
+
+  - --csharp_out generates C# code in DST_DIR. See the C# generated code reference for more.
+    > `--csharp_out`指定C#的代码输出位置。
+
+  - --php_out generates PHP code in DST_DIR. See the PHP generated code reference for more.
+    > `--php_out`指定PHP的代码输出位置。
+
+  As an extra convenience, if the DST_DIR ends in .zip or .jar, the compiler will write the output to a single ZIP-format archive file with the given name. .jar outputs will also be given a manifest file as required by the Java JAR specification. Note that if the output archive already exists, it will be overwritten; the compiler is not smart enough to add files to an existing archive.
+    > 作为额外的便利，如果`DST_DIR`以`.zip`或`.jar`结尾，编译器将把输出写入一个具有给定名称的zip格式归档文件。`.jar`输出也将按照Java的JAR规范的要求提供一个清单文件(manifest)。注意，如果输出存档已经存在，它将被覆盖，编译器还没有智能到能将文件添加到现有存档中。
 
 
 
-
-
-
-
-
+- You must provide one or more .proto files as input. Multiple .proto files can be specified at once. Although the files are named relative to the current directory, each file must reside in one of the IMPORT_PATHs so that the compiler can determine its canonical name.
+  > 必须提供一个或多个`.proto`文件作为输入。可以一次指定多个`.proto`文件。即使提供的文件名是基于当前目录的相对路径，也还是要确保这个文件在`--proto_path`所导入的目录中，以便编译器能够确定其规范路径。
 
