@@ -47,6 +47,76 @@ Our example is a set of command-line applications for managing an address book d
 You can find the complete example in the examples directory of the GitHub repository.
 > 您可以在GitHub存储库的examples目录中找到完整的示例。
 
+# Defining your protocol format
+定义proto格式。
+
+To create your address book application, you'll need to start with a .proto file. The definitions in a .proto file are simple: you add a message for each data structure you want to serialize, then specify a name and a type for each field in the message. In our example, the .proto file that defines the messages is addressbook.proto.
+> 要创建地址簿应用程序，需要从`.proto`文件开始。proto文件中的定义很简单: 为想要序列化的每个数据结构添加一条消息，然后为消息中的每个字段指定名称和类型。在我们的示例中，定义消息的`.proto`文件是`addressbook.proto`。
+
+The .proto file starts with a package declaration, which helps to prevent naming conflicts between different projects.
+> proto文件以一个包声明开始，这有助于防止不同项目之间的命名冲突。
+
+```protobuf
+syntax = "proto3";
+package tutorial;
+
+import "google/protobuf/timestamp.proto";
+```
+
+The go_package option defines the import path of the package which will contain all the generated code for this file. The Go package name will be the last path component of the import path. For example, our example will use a package name of "tutorialpb".
+> `go_package`选项定义了包的导入路径，该路径会包含所有为该文件生成的代码。Go的包名将是导入路径的最后一个路径组件。例如，我们的示例将使用名为“tutorialpb”的包。
+
+```protobuf
+option go_package = "github.com/protocolbuffers/protobuf/examples/go/tutorialpb";
+```
+
+Next, you have your message definitions. A message is just an aggregate containing a set of typed fields. Many standard simple data types are available as field types, including bool, int32, float, double, and string. You can also add further structure to your messages by using other message types as field types.
+> 接下来添加消息定义。消息只是包含一组类型化字段的聚合。许多标准的简单数据类型都可以作为字段类型使用，包括bool、int32、float、double和string。还可以使用其他消息类型作为字段类型，从而向消息添加进一步的结构。
+
+```protobuf
+message Person {
+  string name = 1;
+  int32 id = 2;  // Unique ID number for this person.
+  string email = 3;
+
+  enum PhoneType {
+    MOBILE = 0;
+    HOME = 1;
+    WORK = 2;
+  }
+
+  message PhoneNumber {
+    string number = 1;
+    PhoneType type = 2;
+  }
+
+  repeated PhoneNumber phones = 4;
+
+  google.protobuf.Timestamp last_updated = 5;
+}
+
+// Our address book file is just one of these.
+message AddressBook {
+  repeated Person people = 1;
+}
+```
+
+In the above example, the Person message contains PhoneNumber messages, while the AddressBook message contains Person messages. You can even define message types nested inside other messages – as you can see, the PhoneNumber type is defined inside Person. You can also define enum types if you want one of your fields to have one of a predefined list of values – here you want to specify that a phone number can be one of MOBILE, HOME, or WORK.
+> 在上面的示例中，Person消息包含PhoneNumber消息，而AddressBook消息包含Person消息。您甚至可以定义嵌套在其他消息中的消息类型，如您所见，PhoneNumber类型是在Person中定义的。如果您希望其中一个字段具有预定义的值列表中的一个，您还可以定义枚举类型。比如上面的枚举`PhoneType`，指定电话号码的类型有`MOBILE`、`HOME`或`WORK`。
+
+The " = 1", " = 2" markers on each element identify the unique "tag" that field uses in the binary encoding. Tag numbers 1-15 require one less byte to encode than higher numbers, so as an optimization you can decide to use those tags for the commonly used or repeated elements, leaving tags 16 and higher for less-commonly used optional elements. Each element in a repeated field requires re-encoding the tag number, so repeated fields are particularly good candidates for this optimization.
+> 每个元素上的`= 1`，`= 2`是字段编号，是二进制编码中每个字段的唯一标记。字段编号`1-15`区间的数字需要的编码字节少一个，因此作为一种优化，一般建议将这些编号用于常用的或重复的元素，而将`16`以后的编号用于不常用的可选元素。重复字段中的每个元素都需要对编号进行重新编码，因此重复字段特别适合这种优化。
+
+If a field value isn't set, a default value is used: zero for numeric types, the empty string for strings, false for bools. For embedded messages, the default value is always the "default instance" or "prototype" of the message, which has none of its fields set. Calling the accessor to get the value of a field which has not been explicitly set always returns that field's default value.
+> 如果未设置字段值，则使用默认值: 数值类型为0，字符串为空字符串，boolean为false。对于嵌入式消息，默认值总是消息的“默认实例”或“原型”，其中没有设置任何字段。调用访问器来获取未显式设置的字段的值总是返回该字段的默认值。
+
+If a field is repeated, the field may be repeated any number of times (including zero). The order of the repeated values will be preserved in the protocol buffer. Think of repeated fields as dynamically sized arrays.
+> 对于一个重复字段，该字段可以重复任何次数(包括0)。重复值的顺序将保存在protobuf中。可以将重复字段看作动态大小的数组。
+
+You'll find a complete guide to writing .proto files – including all the possible field types – in the Protocol Buffer Language Guide. Don't go looking for facilities similar to class inheritance, though – protocol buffers don't do that.
+> 您将在`Protocol Buffer Language Guide`中找到一个完整的编写`.proto`文件的指南，其中包括所有可能的字段类型。不要去寻找类似于类继承的工具，protobuf不这么做。
+
+
 
 
 
