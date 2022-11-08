@@ -149,7 +149,38 @@ Because you want Go code, you use the --go_out option – similar options are pr
 This generates github.com/protocolbuffers/protobuf/examples/go/tutorialpb/addressbook.pb.go in your specified destination directory.
 > 这里会生成`github.com/protocolbuffers/protobuf/examples/go/tutorialpb/addressbook.pb.go`代码文件到指定的目标目录。
 
+# The Protocol Buffer API
+protobuf的API。
 
+Generating addressbook.pb.go gives you the following useful types:
+> 生成的`addressbook.pb.go`提供了以下这些有用的类型:
 
+- An AddressBook structure with a People field.
+  > 一个`AddressBook`结构体，带有一个`People`字段。
 
+- A Person structure with fields for Name, Id, Email and Phones.
+  > 一个`Person`结构体，带有字段`Name`、`Id`、`Email`以及`Phones`。
+
+- A Person_PhoneNumber structure, with fields for Number and Type.
+  > 一个`Person_PhoneNumber`结构体，带有字段`Number`和`Type`。
+
+- The type Person_PhoneType and a value defined for each value in the Person.PhoneType enum.
+  > 类型`Person_PhoneType`，并在枚举`Person.PhoneType`中定义了该类型的几种固定值。
+
+You can read more about the details of exactly what's generated in the Go Generated Code guide, but for the most part you can treat these as perfectly ordinary Go types.
+> 你可以在`Go Generated Code guide`中阅读更多关于生成内容的细节，但在大多数情况下，你可以将它们视为非常普通的Go类型。
+
+Here's an example from the list_people command's unit tests of how you might create an instance of Person:
+> 下面是`list_people`命令的单元测试中的一个示例，说明如何创建Person的实例:
+
+```go
+p := pb.Person{
+        Id:    1234,
+        Name:  "John Doe",
+        Email: "jdoe@example.com",
+        Phones: []*pb.Person_PhoneNumber{
+                {Number: "555-4321", Type: pb.Person_HOME},
+        },
+}
+```
 
