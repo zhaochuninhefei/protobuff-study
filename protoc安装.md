@@ -1,7 +1,7 @@
 protoc安装
 =====
 
-对protoc以及go的`protoc-gen-go`插件的安装介绍。
+对protoc以及go的相关插件的安装介绍。
 
 # 一、安装protoc
 从github下载对应自己平台的二进制安装包，在本地解压，并设置环境变量。
@@ -58,6 +58,8 @@ protoc --version
 ```
 
 # 二、安装protoc-gen-go
+protoc并不直接支持Go语言，还需要安装对应的Go语言插件`protoc-gen-go`。
+
 直接执行安装命令:
 ```bash
 go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
@@ -73,8 +75,37 @@ ll $GOPATH/bin
 
 然后将`$GOPATH/bin`加入PATH环境变量:
 ```bash
+export PATH=${GOPATH}/bin:$PATH
+```
+> 为了开机自动执行，将上面的命令加入`/etc/profile`。
 
+然后执行命令查看版本:
+```bash
+# protoc-gen-go v1.28.1
+protoc-gen-go --version
 
 ```
 
+# 三、安装protoc-gen-go-grpc
+protobuf常常是用来配合gRPC框架的，如果要使用gRPC框架，那么还需要`protoc-gen-go-grpc`插件。
+
+命令行安装:
+```bash
+go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+```
+
+然后就可以在`$GOBIN`或默认的`$GOPATH/bin`下看到该插件。
+```bash
+ll $GOPATH/bin
+...
+-rwxrwxr-x 1 zhaochun zhaochun  8162514 11月  8 17:56 protoc-gen-go-grpc*
+...
+```
+
+`$GOPATH/bin`已经加入环境变量`PATH`，可以直接运行命令查看版本:
+```bash
+# protoc-gen-go-grpc 1.2.0
+protoc-gen-go-grpc --version
+
+```
 

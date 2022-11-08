@@ -12,3 +12,11 @@ message ShowInfo {
     repeated asset.BasicAsset assets = 2;
     google.protobuf.Timestamp show_time = 3;
 }
+
+message ShowRequest {
+    int64 request_id = 1;
+}
+
+service ShowService{
+    rpc Show(ShowRequest) returns (ShowInfo);
+}
