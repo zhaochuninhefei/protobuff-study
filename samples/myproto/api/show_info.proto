@@ -5,8 +5,10 @@ package api;
 option go_package = "github.com/zhaochuninhefei/myproto-go/api";
 
 import "asset/basic_asset.proto";
+import "google/protobuf/timestamp.proto";
 
 message ShowInfo {
     int64 info_id = 1;
     repeated asset.BasicAsset assets = 2;
+    google.protobuf.Timestamp show_time = 3;
 }
