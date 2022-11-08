@@ -117,6 +117,39 @@ You'll find a complete guide to writing .proto files – including all the possi
 > 您将在`Protocol Buffer Language Guide`中找到一个完整的编写`.proto`文件的指南，其中包括所有可能的字段类型。不要去寻找类似于类继承的工具，protobuf不这么做。
 
 
+# Compiling your protocol buffers
+编译protobuf。
+
+Now that you have a .proto, the next thing you need to do is generate the classes you'll need to read and write AddressBook (and hence Person and PhoneNumber) messages. To do this, you need to run the protocol buffer compiler protoc on your .proto:
+> 现在您有了`.proto`，接下来需要做的是生成相关的类，来读取和写入AddressBook(以及Person和PhoneNumber)消息。为此，需要在`.proto`上运行protobuf编译器`protoc`:
+
+1.If you haven't installed the compiler, download the package and follow the instructions in the README.
+> 如果您还没有安装编译器，请下载该包并按照README中的说明操作。
+
+2.Run the following command to install the Go protocol buffers plugin:
+> 运行以下命令安装Go的protobuf插件:
+
+```bash
+go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+```
+
+The compiler plugin protoc-gen-go will be installed in $GOBIN, defaulting to $GOPATH/bin. It must be in your $PATH for the protocol compiler protoc to find it.
+> 编译器插件`protoc-gen-go`会被安装在环境变量`$GOBIN`的目录下，默认是`$GOPATH/bin`。注意，这个路径需要加入你的本地环境变量`$PATH`，确保protobuf编译器protoc能够找到它。
+
+3.Now run the compiler, specifying the source directory (where your application's source code lives – the current directory is used if you don't provide a value), the destination directory (where you want the generated code to go; often the same as $SRC_DIR), and the path to your .proto. In this case, you would invoke:
+> 现在运行编译器，指定源目录(应用程序源代码所在的位置，如果不提供值则使用当前目录)、目标目录(您希望生成的代码存放的位置;通常与`$SRC_DIR`相同)，以及`.proto`的路径。在本例中，您将调用:
+
+```bash
+protoc -I=$SRC_DIR --go_out=$DST_DIR $SRC_DIR/addressbook.proto
+```
+
+Because you want Go code, you use the --go_out option – similar options are provided for other supported languages.
+> 因为这里是要生成Go的代码，因此使用`--go_out`选项，类似选项用来支持其他语言。
+
+This generates github.com/protocolbuffers/protobuf/examples/go/tutorialpb/addressbook.pb.go in your specified destination directory.
+> 这里会生成`github.com/protocolbuffers/protobuf/examples/go/tutorialpb/addressbook.pb.go`代码文件到指定的目标目录。
+
+
 
 
 
