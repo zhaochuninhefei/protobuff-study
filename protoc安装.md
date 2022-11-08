@@ -64,6 +64,17 @@ go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 ```
 
 然后就可以在`$GOBIN`或默认的`$GOPATH/bin`下看到该插件。
+```bash
+ll $GOPATH/bin
+...
+-rwxrwxr-x 1 zhaochun zhaochun  8347446 11月  8 11:42 protoc-gen-go*
+...
+```
 
+然后将`$GOPATH/bin`加入PATH环境变量:
+```bash
+
+
+```
 
 

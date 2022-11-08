@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package owner;
+
+option go_package = "github.com/zhaochuninhefei/myproto-go/owner";
+
+message Owner {
+    int64 owner_id = 1;
+    string owner_name = 2;
+}
