@@ -204,5 +204,23 @@ if err := ioutil.WriteFile(fname, out, 0644); err != nil {
 }
 ```
 
+# Reading a Message
+读消息。
+
+To parse an encoded message, you use the proto library's Unmarshal function. Calling this parses the data in in as a protocol buffer and places the result in book. So to parse the file in the list_people command, we use:
+> 要解析编码后的消息，可以使用proto库的Unmarshal函数。调用该函数将第一个参数`in`中的数据作为protobuf进行解析，并将结果放在第二个参数`book`中。因此，要解析`list_people`命令中的文件，我们使用:
+
+```go
+// Read the existing address book.
+in, err := ioutil.ReadFile(fname)
+if err != nil {
+        log.Fatalln("Error reading file:", err)
+}
+book := &pb.AddressBook{}
+if err := proto.Unmarshal(in, book); err != nil {
+        log.Fatalln("Failed to parse address book:", err)
+}
+```
+
 
 
