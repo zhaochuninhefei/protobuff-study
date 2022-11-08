@@ -222,5 +222,28 @@ if err := proto.Unmarshal(in, book); err != nil {
 }
 ```
 
+# Extending a Protocol Buffer
+扩展protobuf。
+
+Sooner or later after you release the code that uses your protocol buffer, you will undoubtedly want to "improve" the protocol buffer's definition. If you want your new buffers to be backwards-compatible, and your old buffers to be forward-compatible – and you almost certainly do want this – then there are some rules you need to follow. In the new version of the protocol buffer:
+> 在发布并使用protobuf代码之后，迟早需要改进protobuf定义。如果想让新的protobuf向后兼容，旧的protobuf向前兼容，则需要遵循一些规则。在新版本的protobuf中:
+
+- you must not change the tag numbers of any existing fields.
+  > 不可以改变既有字段的字段编号。
+
+- you may delete fields.
+  > 可以删除字段。
+
+- you may add new fields but you must use fresh tag numbers (i.e. tag numbers that were never used in this protocol buffer, not even by deleted fields).
+  > 可以添加新字段，但只能使用从来没有用过的编号，不可以使用之前用过的字段编号，哪怕这个编号对应的字段被删除了。
+
+(There are some exceptions to these rules, but they are rarely used.)
+> (这些规则也有例外，但很少使用。)
+
+If you follow these rules, old code will happily read new messages and simply ignore any new fields. To the old code, singular fields that were deleted will simply have their default value, and deleted repeated fields will be empty. New code will also transparently read old messages.
+> 如果遵循这些规则，旧代码将愉快地读取新消息，并简单地忽略任何新字段。对于旧的代码，被删除的单数字段将只具有其默认值，而被删除的重复字段将为空。新代码还将透明地读取旧消息。
+
+However, keep in mind that new fields will not be present in old messages, so you will need to do something reasonable with the default value. A type-specific default value is used: for strings, the default value is the empty string. For booleans, the default value is false. For numeric types, the default value is zero.
+> 但是，请记住，新字段不会出现在旧消息中，因此您需要对默认值做一些合理的处理。使用特定于类型的默认值: 对于字符串，默认值是空字符串。对于布尔值，默认值为false。对于数字类型，默认值为0。
 
 
