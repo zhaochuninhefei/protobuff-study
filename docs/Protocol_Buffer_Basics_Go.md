@@ -184,3 +184,25 @@ p := pb.Person{
 }
 ```
 
+# Writing a Message
+写消息。
+
+The whole purpose of using protocol buffers is to serialize your data so that it can be parsed elsewhere. In Go, you use the proto library's Marshal function to serialize your protocol buffer data. A pointer to a protocol buffer message's struct implements the proto.Message interface. Calling proto.Marshal returns the protocol buffer, encoded in its wire format. For example, we use this function in the add_person command:
+> 使用protobuf的完整目的是序列化数据，以便可以在其他地方解析它。在Go中，使用proto库的Marshal函数来序列化protobuf数据。一个指向protobuf消息结构体的指针实现了`proto.Message`接口。调用`proto.Marshal`会返回一个protobuf数据，该数据以二进制格式对消息进行编码。例如，我们在`add_person`命令中使用这个函数:
+
+```go
+book := &pb.AddressBook{}
+// ...
+
+// Write the new address book back to disk.
+out, err := proto.Marshal(book)
+if err != nil {
+        log.Fatalln("Failed to encode address book:", err)
+}
+if err := ioutil.WriteFile(fname, out, 0644); err != nil {
+        log.Fatalln("Failed to write address book:", err)
+}
+```
+
+
+
