@@ -2,7 +2,6 @@
 
 proto_path=myproto
 go_out=myproto-go
-build_targets=$(find myproto -name "*.proto" | tr '\n' ' ')
 
 # 删除目标工程下的代码文件
 if [ -d "${go_out}/api" ]; then
@@ -16,17 +15,17 @@ if [ -d "${go_out}/owner" ]; then
 fi
 
 # 检查删除结果
-echo "----- 删除结果:"
+echo "----- 删除代码后:"
 ls -l ${go_out}/
 
 # 编译go代码
+# shellcheck disable=SC2046
 protoc \
   --proto_path=${proto_path} \
   --go_out=${go_out} --go_opt=paths=source_relative \
   --go-grpc_out=${go_out} --go-grpc_opt=paths=source_relative \
-  ${build_targets}
-  # myproto/asset/basic_asset.proto myproto/owner/owner.proto myproto/api/show_info.proto
+  $(find ${proto_path} -iname "*.proto")
 
 # 检查编译结果
-echo "----- 编译结果:"
+echo "----- 重新编译后:"
 ls -l ${go_out}/
