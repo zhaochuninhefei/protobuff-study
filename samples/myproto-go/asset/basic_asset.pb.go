@@ -21,6 +21,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// BasicAsset 基础资产
 type BasicAsset struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

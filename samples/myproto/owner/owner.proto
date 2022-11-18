@@ -4,6 +4,7 @@ package owner;
 
 option go_package = "github.com/zhaochuninhefei/myproto-go/owner";
 
+// Owner 资产拥有者
 message Owner {
     int64 owner_id = 1;
     string owner_name = 2;

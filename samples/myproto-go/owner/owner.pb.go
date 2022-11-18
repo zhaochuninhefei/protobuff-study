@@ -20,6 +20,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// Owner 资产拥有者
 type Owner struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

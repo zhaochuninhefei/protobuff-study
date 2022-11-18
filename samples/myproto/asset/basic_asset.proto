@@ -2,10 +2,13 @@ syntax = "proto3";
 
 package asset;
 
+// 指定go包
 option go_package = "github.com/zhaochuninhefei/myproto-go/asset";
 
+// 依赖
 import "owner/owner.proto";
 
+// BasicAsset 基础资产
 message BasicAsset {
     int64 asset_id = 1;
     string asset_name = 2;
