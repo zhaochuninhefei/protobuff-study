@@ -22,6 +22,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// 定义接口Show的返回消息
 type ShowInfo struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -85,6 +86,7 @@ func (x *ShowInfo) GetShowTime() *timestamppb.Timestamp {
 	return nil
 }
 
+// 定义接口Show的请求消息
 type ShowRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
