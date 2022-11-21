@@ -20,10 +20,13 @@ if [ "$go_out" == "" ]
 then
   go_out=myproto-go
 fi
+echo
+echo "--- 编译目录情报汇总 开始 ---"
 echo "您现在位于: $(pwd)"
 echo "您指定的proto工程目录(相对当前目录):"$proto_path
 echo "您指定的go代码工程目录(相对当前目录):"$go_out
-
+echo "--- 编译目录情报汇总 结束 ---"
+echo
 read -r -p "请确定是否开始编译?(y/n)" goon_build
 
 if [ ! "$goon_build" == "y" ]
@@ -31,7 +34,8 @@ then
  exit 1
 fi
 
-echo "===== protoc编译开始 ====="
+echo
+echo "===== 1. 删除 $go_out 下的即存编译结果 ====="
 
 # 删除目标工程下的代码文件
 # 用find命令寻找`${go_out}`下的目录。
@@ -47,9 +51,11 @@ done
 
 # 检查删除结果
 echo
-echo "----- 删除代码后:"
+echo "删除代码后的 $go_out 目录:"
 tree ${go_out}/
 
+echo
+echo "===== 2. protoc编译开始 ====="
 # 编译go代码
 # shellcheck disable=SC2046
 protoc \
@@ -59,8 +65,7 @@ protoc \
   $(find ${proto_path} -iname "*.proto")
 
 # 检查编译结果
-echo
-echo "----- 重新编译后:"
+echo "重新编译后的 $go_out 目录::"
 tree ${go_out}/
 
 echo
