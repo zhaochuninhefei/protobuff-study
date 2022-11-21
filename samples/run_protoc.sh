@@ -2,11 +2,36 @@
 
 # 发生错误时立即终止脚本
 set -e
-echo "===== protoc编译开始 ====="
+
+echo "===== protoc编译目录指定 ====="
+echo "您现在位于: "
+pwd
+echo "该目录下拥有如下文件及子目录:"
+ls -l
 # 指定proto工程目录(相对当前目录)
-proto_path=myproto
+read -r -p "请输入proto工程目录(相对当前目录), 默认 myproto:" proto_path
 # 指定go代码工程目录(相对当前目录)
-go_out=myproto-go
+read -r -p "请输入go代码工程目录(相对当前目录), 默认 myproto-go:" go_out
+if [ "$proto_path" == "" ]
+then
+  proto_path=myproto
+fi
+if [ "$go_out" == "" ]
+then
+  go_out=myproto-go
+fi
+echo "您现在位于: $(pwd)"
+echo "您指定的proto工程目录(相对当前目录):"$proto_path
+echo "您指定的go代码工程目录(相对当前目录):"$go_out
+
+read -r -p "请确定是否开始编译?(y/n)" goon_build
+
+if [ ! "$goon_build" == "y" ]
+then
+ exit 1
+fi
+
+echo "===== protoc编译开始 ====="
 
 # 删除目标工程下的代码文件
 # 用find命令寻找`${go_out}`下的目录。
