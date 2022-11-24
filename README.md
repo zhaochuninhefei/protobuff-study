@@ -22,4 +22,4 @@ docs目录下是protobuff的官方文档的翻译资料:
 # 示例代码
 protoc示例代码及其go语言的编译结果。
 
-<a href="./samples/readme.md" target="_blank">samples</a>
+<a href="./samples" target="_blank">samples</a>
