@@ -18,3 +18,8 @@ docs目录下是protobuff的官方文档的翻译资料:
 官方文档入口: 
 
 <a href="https://developers.google.com/protocol-buffers/docs/overview" target="_blank">https://developers.google.com/protocol-buffers/docs/overview</a>
+
+# 示例代码
+protoc示例代码及其go语言的编译结果。
+
+<a href="./samples/readme.md" target="_blank">samples</a>
