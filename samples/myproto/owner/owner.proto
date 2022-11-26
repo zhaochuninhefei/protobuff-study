@@ -8,4 +8,5 @@ option go_package = "github.com/zhaochuninhefei/myproto-go/owner";
 message Owner {
     int64 owner_id = 1;
     string owner_name = 2;
+    string owner_desc = 16;
 }
