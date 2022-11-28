@@ -14,4 +14,5 @@ message BasicAsset {
     string asset_name = 2;
     int64 asset_price = 3;
     owner.Owner asset_owner = 4;
+    string asset_desc = 16;
 }
