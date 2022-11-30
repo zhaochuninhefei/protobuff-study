@@ -13,6 +13,7 @@ message BasicAsset {
     int64 asset_id = 1;
     string asset_name = 2;
     int64 asset_price = 3;
+    // 注意这里引用owner.proto中的Owner时，前面要加上它的包名owner
     owner.Owner asset_owner = 4;
     string asset_desc = 16;
 }

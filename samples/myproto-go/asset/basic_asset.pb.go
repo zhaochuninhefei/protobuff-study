@@ -27,9 +27,10 @@ type BasicAsset struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	AssetId    int64        `protobuf:"varint,1,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty"`
-	AssetName  string       `protobuf:"bytes,2,opt,name=asset_name,json=assetName,proto3" json:"asset_name,omitempty"`
-	AssetPrice int64        `protobuf:"varint,3,opt,name=asset_price,json=assetPrice,proto3" json:"asset_price,omitempty"`
+	AssetId    int64  `protobuf:"varint,1,opt,name=asset_id,json=assetId,proto3" json:"asset_id,omitempty"`
+	AssetName  string `protobuf:"bytes,2,opt,name=asset_name,json=assetName,proto3" json:"asset_name,omitempty"`
+	AssetPrice int64  `protobuf:"varint,3,opt,name=asset_price,json=assetPrice,proto3" json:"asset_price,omitempty"`
+	// 注意这里引用owner.proto中的Owner时，前面要加上它的包名owner
 	AssetOwner *owner.Owner `protobuf:"bytes,4,opt,name=asset_owner,json=assetOwner,proto3" json:"asset_owner,omitempty"`
 	AssetDesc  string       `protobuf:"bytes,16,opt,name=asset_desc,json=assetDesc,proto3" json:"asset_desc,omitempty"`
 }
