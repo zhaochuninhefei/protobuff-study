@@ -16,4 +16,10 @@ message BasicAsset {
     // 注意这里引用owner.proto中的Owner时，前面要加上它的包名owner
     owner.Owner asset_owner = 4;
     string asset_desc = 16;
+
+    // oneof,只有一个字段会被实际使用
+    oneof asset_num {
+      string asset_num_str = 17;
+      int64 asset_num_int = 18;
+    }
 }
