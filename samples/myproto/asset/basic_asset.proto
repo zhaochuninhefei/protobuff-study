@@ -7,6 +7,7 @@ option go_package = "github.com/zhaochuninhefei/myproto-go/asset";
 
 // 依赖
 import "owner/owner.proto";
+import "google/protobuf/any.proto";
 
 // BasicAsset 基础资产
 message BasicAsset {
@@ -22,4 +23,7 @@ message BasicAsset {
       string asset_num_str = 17;
       int64 asset_num_int = 18;
     }
+
+    // 集合字段
+    repeated google.protobuf.Any details = 19;
 }
