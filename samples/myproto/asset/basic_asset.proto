@@ -26,4 +26,29 @@ message BasicAsset {
 
     // 集合字段
     repeated google.protobuf.Any details = 19;
+
+    // 资产状态，枚举字段
+    enum AssetStatus {
+      // 未知状态
+      UNKNOWN = 0;
+      // 注册中
+      REGISTERING = 1;
+      // 已注册
+      REGISTERED = 2;
+      // 注册失败
+      ERR_REGISTER = -1;
+      // 变更中
+      CHANGING = 3;
+      // 已变更
+      CHANGED = 4;
+      // 变更失败
+      ERR_CHANGE = -3;
+      // 冻结中
+      FREEZING = 5;
+      // 已冻结
+      FROZEN = 6;
+      // 冻结失败
+      ERR_FREEZE = -5;
+    }
+    AssetStatus asset_status = 5;
 }
