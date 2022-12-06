@@ -5,3 +5,5 @@ samples/myproto/.vscode
 samples/myproto/.idea
 samples/.vscode
 samples/.idea
+.idea
+.vscode
