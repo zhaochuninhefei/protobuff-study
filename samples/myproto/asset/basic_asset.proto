@@ -51,4 +51,7 @@ message BasicAsset {
       ERR_FREEZE = -5;
     }
     AssetStatus asset_status = 5;
+
+    // 资产构成
+    map<string, BasicAsset> asset_composition = 20;
 }
