@@ -1,2 +1,5 @@
-samples/myproto-go/.vscode/settings.json
+samples/myproto-go/.vscode
+samples/myproto-go/.idea
 samples/myproto-go/go.sum
+samples/myproto/.vscode
+samples/myproto/.idea
