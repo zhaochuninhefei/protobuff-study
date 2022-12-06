@@ -3,3 +3,5 @@ samples/myproto-go/.idea
 samples/myproto-go/go.sum
 samples/myproto/.vscode
 samples/myproto/.idea
+samples/.vscode
+samples/.idea
