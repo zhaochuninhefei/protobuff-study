@@ -1,7 +1,28 @@
 #!/bin/bash
 
+################################################################################
+# run_protoc.sh protoc编译脚本(go专用)
+#
+# 作者: zhaochun
+# 日期: 2022/12/06
+# 描述: 本脚本用于编译将proto工程编译为go工程，使用时注意:
+#      1) 先cd到samples目录，再执行脚本，如:
+#          cd /.../.../protobuff-study/samples
+#          ./run_protoc.sh
+#      2) 脚本执行无需输入参数，注意过程中的输入选项即可。
+#      3) 执行脚本前确认环境是否OK，包括:
+#          1.golang环境 : `go version`
+#          2.protoc编译器 : `protoc --version`
+#          3.protoc-gen-go插件 : `protoc-gen-go --version`
+#          4.protoc-gen-go-grpc插件 : `protoc-gen-go-grpc --version`
+################################################################################
+
 # 发生错误时立即终止脚本
 set -e
+
+# 默认值 在其他proto工程下使用该脚本时，建议替换默认值
+default_proto_path=myproto
+default_go_out=myproto-go
 
 echo "===== protoc编译目录指定 ====="
 echo "您现在位于: "
@@ -9,16 +30,16 @@ pwd
 echo "该目录下拥有如下文件及子目录:"
 ls -l
 # 指定proto工程目录(相对当前目录)
-read -r -p "请输入proto工程目录(相对当前目录), 默认 myproto:" proto_path
+read -r -p "请输入proto工程目录(相对当前目录), 默认 ${default_proto_path}:" proto_path
 # 指定go代码工程目录(相对当前目录)
-read -r -p "请输入go代码工程目录(相对当前目录), 默认 myproto-go:" go_out
+read -r -p "请输入go代码工程目录(相对当前目录), 默认 ${default_go_out}:" go_out
 if [ "$proto_path" == "" ]
 then
-  proto_path=myproto
+  proto_path=${default_proto_path}
 fi
 if [ "$go_out" == "" ]
 then
-  go_out=myproto-go
+  go_out=${default_go_out}
 fi
 echo
 echo "--- 编译目录情报汇总 开始 ---"
