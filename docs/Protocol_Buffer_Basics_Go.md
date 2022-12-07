@@ -73,7 +73,7 @@ option go_package = "github.com/protocolbuffers/protobuf/examples/go/tutorialpb"
 Next, you have your message definitions. A message is just an aggregate containing a set of typed fields. Many standard simple data types are available as field types, including bool, int32, float, double, and string. You can also add further structure to your messages by using other message types as field types.
 > 接下来添加消息定义。消息只是包含一组类型化字段的聚合。许多标准的简单数据类型都可以作为字段类型使用，包括bool、int32、float、double和string。还可以使用其他消息类型作为字段类型，从而向消息添加进一步的结构。
 
-```protobuf
+```
 message Person {
   string name = 1;
   int32 id = 2;  // Unique ID number for this person.
@@ -173,7 +173,7 @@ You can read more about the details of exactly what's generated in the Go Genera
 Here's an example from the list_people command's unit tests of how you might create an instance of Person:
 > 下面是`list_people`命令的单元测试中的一个示例，说明如何创建Person的实例:
 
-```go
+```
 p := pb.Person{
         Id:    1234,
         Name:  "John Doe",
@@ -190,7 +190,7 @@ p := pb.Person{
 The whole purpose of using protocol buffers is to serialize your data so that it can be parsed elsewhere. In Go, you use the proto library's Marshal function to serialize your protocol buffer data. A pointer to a protocol buffer message's struct implements the proto.Message interface. Calling proto.Marshal returns the protocol buffer, encoded in its wire format. For example, we use this function in the add_person command:
 > 使用protobuf的完整目的是序列化数据，以便可以在其他地方解析它。在Go中，使用proto库的Marshal函数来序列化protobuf数据。一个指向protobuf消息结构体的指针实现了`proto.Message`接口。调用`proto.Marshal`会返回一个protobuf数据，该数据以二进制格式对消息进行编码。例如，我们在`add_person`命令中使用这个函数:
 
-```go
+```
 book := &pb.AddressBook{}
 // ...
 
@@ -210,7 +210,7 @@ if err := ioutil.WriteFile(fname, out, 0644); err != nil {
 To parse an encoded message, you use the proto library's Unmarshal function. Calling this parses the data in in as a protocol buffer and places the result in book. So to parse the file in the list_people command, we use:
 > 要解析编码后的消息，可以使用proto库的Unmarshal函数。调用该函数将第一个参数`in`中的数据作为protobuf进行解析，并将结果放在第二个参数`book`中。因此，要解析`list_people`命令中的文件，我们使用:
 
-```go
+```
 // Read the existing address book.
 in, err := ioutil.ReadFile(fname)
 if err != nil {

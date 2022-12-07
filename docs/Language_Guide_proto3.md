@@ -79,7 +79,7 @@ In proto3, repeated fields of scalar numeric types use packed encoding by defaul
 Multiple message types can be defined in a single .proto file. This is useful if you are defining multiple related messages – so, for example, if you wanted to define the reply message format that corresponds to your SearchResponse message type, you could add it to the same .proto:
 > 多个消息类型可以在一个`.proto`文件中定义。这在定义多个相关消息时非常有用，例如，如果想定义与SearchResponse消息类型对应的回复消息格式，可以将其添加到相同的`.proto`中:
 
-```protobuf
+```
 message SearchRequest {
   string query = 1;
   int32 page_number = 2;
@@ -97,7 +97,7 @@ message SearchResponse {
 To add comments to your .proto files, use C/C++-style // and /* ... */ syntax.
 > 要向您的`.proto`文件添加注释，请使用`C/C++`样式的`//`和`/* ... */`语法。
 
-```protobuf
+```
 /* SearchRequest represents a search query, with pagination options to
  * indicate which results to include in the response. */
 
@@ -114,7 +114,7 @@ message SearchRequest {
 If you update a message type by entirely removing a field, or commenting it out, future users can reuse the field number when making their own updates to the type. This can cause severe issues if they later load old versions of the same .proto, including data corruption, privacy bugs, and so on. One way to make sure this doesn't happen is to specify that the field numbers (and/or names, which can also cause issues for JSON serialization) of your deleted fields are reserved. The protocol buffer compiler will complain if any future users try to use these field identifiers.
 > 如果通过完全删除字段或将其注释掉的方式来更新消息类型，那么将来的开发者在修改该消息类型时就可能会重复使用字段编号。这样可能会在使用老版本的`.proto`时造成一些问题，包括数据损坏，隐私漏洞等。要确保这种情况不会发生的一种方法是，将那些被删除的字段编号指定为保留。另外删除的字段名也应该指定为保留，否则在做JSON序列化操作时也会引起类似的问题。如果开发者试图使用被保留的字段名或字段编号，protobuf编译器将会报错。
 
-```protobuf
+```
 message Foo {
   reserved 2, 15, 9 to 11;
   reserved "foo", "bar";
@@ -166,23 +166,23 @@ You can find out more about using the APIs for each language by following the tu
 A scalar message field can have one of the following types – the table shows the type specified in the .proto file, and the corresponding type in the automatically generated class:
 > 标量消息字段可以具有以下类型之一(表格显示了`.proto`文件中指定的类型，以及自动生成的类中相应的类型):
 
-| .proto Type | Notes | C++ Type | Java/Kotlin Type① | Python Type③ | Go Type | Ruby Type | C# Type | PHP Type | Dart Type |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| double | | double | double | float | float64 | Float | double | float | double |
-| float | | float | float | float | float32 | Float | float | float | double |
-| int32 | <div style="width: 300pt">Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative values, use sint32 instead. <br>使用变长编码。负数的效率很低，请使用sint32代替。</div> | int32 | int | int | int32 | Fixnum or Bignum (as required) | int | integer | int |
-| int64 | Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative values, use sint64 instead.<br>使用变长编码。负数的效率很低，请使用sint64代替。 | int64 | long | int/long④ | int64 | Bignum | long | integer/string⑥ | Int64 |
-| uint32 | Uses variable-length encoding.<br>使用变长编码，无符号整数。 | uint32 | int② | int/long④ | uint32 | Fixnum or Bignum (as required) | uint | integer | int |
-| uint64 | Uses variable-length encoding.<br>使用变长编码，无符号整数。 | uint64 | long② | int/long④ | uint64 | Bignum | ulong | integer/string⑥	 | Int64 |
-| sint32 | Uses variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int32s.<br>使用变长编码。有符号整数。负数时相比常规的int32更高效。 | int32 | int | int | int32 | Fixnum or Bignum (as required) | int | integer | int |
-| sint64 | Uses variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int64s.<br>使用变长编码。有符号整数。负数时相比常规的int64更高效。 | int64 | long | int/long④ | int64 | Bignum | long | integer/string⑥	 | Int64 |
-| fixed32 | Always four bytes. More efficient than uint32 if values are often greater than `2^28`.<br>固定4个字节的整型，无符号。如果值常常大于`2^28`，则比uint32更高效。 | uint32 | int② | int/long④ | uint32 | Fixnum or Bignum (as required) | uint | integer | int |
-| fixed64 | Always eight bytes. More efficient than uint64 if values are often greater than `2^56`.<br>固定8个字节的整型，无符号。如果值常常大于`2^56`，则比uint64更高效。 | uint64 | long② | int/long④ | uint64 | Bignum | ulong | integer/string⑥ | Int64 |
-| sfixed32 | Always four bytes.<br>固定4个字节的整型，有符号。 | int32 | int | int | int32 | Fixnum or Bignum (as required) | int | integer | int |
-| sfixed64 | Always eight bytes.<br>固定8个字节的整型，有符号。 | int64 | long | int/long④ | int64 | Bignum | long | integer/string⑥ | Int64 |
-| bool | | bool | boolean | bool | bool | TrueClass/FalseClass | bool | boolean | bool |
-| string | A string must always contain UTF-8 encoded or 7-bit ASCII text, and cannot be longer than `2^32`.<br>字符串，UTF-8编码或7位ASCII文本，长度不能超过`2^32`。 | string | String | str/unicode⑤ | string | String (UTF-8) | string | string | String |
-| bytes | May contain any arbitrary sequence of bytes no longer than `2^32`.<br>长度不超过`2^32`的任意字节序列。 | string | ByteString | str(Python2)/bytes(Python3) | []byte | String (ASCII-8BIT) | ByteString | string | List |
+| .proto Type | Notes                                                                                                                                                                                                           | C++ Type | Java/Kotlin Type① | Python Type③                | Go Type | Ruby Type                      | C# Type    | PHP Type         | Dart Type |
+|-------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|-------------------|-----------------------------|---------|--------------------------------|------------|------------------|-----------|
+| double      |                                                                                                                                                                                                                 | double   | double            | float                       | float64 | Float                          | double     | float            | double    |
+| float       |                                                                                                                                                                                                                 | float    | float             | float                       | float32 | Float                          | float      | float            | double    |
+| int32       | <div style="width: 300pt">Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative values, use sint32 instead. <br>使用变长编码。负数的效率很低，请使用sint32代替。</div> | int32    | int               | int                         | int32   | Fixnum or Bignum (as required) | int        | integer          | int       |
+| int64       | Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative values, use sint64 instead.<br>使用变长编码。负数的效率很低，请使用sint64代替。                                  | int64    | long              | int/long④                   | int64   | Bignum                         | long       | integer/string⑥  | Int64     |
+| uint32      | Uses variable-length encoding.<br>使用变长编码，无符号整数。                                                                                                                                                                 | uint32   | int②              | int/long④                   | uint32  | Fixnum or Bignum (as required) | uint       | integer          | int       |
+| uint64      | Uses variable-length encoding.<br>使用变长编码，无符号整数。                                                                                                                                                                 | uint64   | long②             | int/long④                   | uint64  | Bignum                         | ulong      | integer/string⑥	 | Int64     |
+| sint32      | Uses variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int32s.<br>使用变长编码。有符号整数。负数时相比常规的int32更高效。                                                          | int32    | int               | int                         | int32   | Fixnum or Bignum (as required) | int        | integer          | int       |
+| sint64      | Uses variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int64s.<br>使用变长编码。有符号整数。负数时相比常规的int64更高效。                                                          | int64    | long              | int/long④                   | int64   | Bignum                         | long       | integer/string⑥	 | Int64     |
+| fixed32     | Always four bytes. More efficient than uint32 if values are often greater than `2^28`.<br>固定4个字节的整型，无符号。如果值常常大于`2^28`，则比uint32更高效。                                                                              | uint32   | int②              | int/long④                   | uint32  | Fixnum or Bignum (as required) | uint       | integer          | int       |
+| fixed64     | Always eight bytes. More efficient than uint64 if values are often greater than `2^56`.<br>固定8个字节的整型，无符号。如果值常常大于`2^56`，则比uint64更高效。                                                                             | uint64   | long②             | int/long④                   | uint64  | Bignum                         | ulong      | integer/string⑥  | Int64     |
+| sfixed32    | Always four bytes.<br>固定4个字节的整型，有符号。                                                                                                                                                                            | int32    | int               | int                         | int32   | Fixnum or Bignum (as required) | int        | integer          | int       |
+| sfixed64    | Always eight bytes.<br>固定8个字节的整型，有符号。                                                                                                                                                                           | int64    | long              | int/long④                   | int64   | Bignum                         | long       | integer/string⑥  | Int64     |
+| bool        |                                                                                                                                                                                                                 | bool     | boolean           | bool                        | bool    | TrueClass/FalseClass           | bool       | boolean          | bool      |
+| string      | A string must always contain UTF-8 encoded or 7-bit ASCII text, and cannot be longer than `2^32`.<br>字符串，UTF-8编码或7位ASCII文本，长度不能超过`2^32`。                                                                        | string   | String            | str/unicode⑤                | string  | String (UTF-8)                 | string     | string           | String    |
+| bytes       | May contain any arbitrary sequence of bytes no longer than `2^32`.<br>长度不超过`2^32`的任意字节序列。                                                                                                                       | string   | ByteString        | str(Python2)/bytes(Python3) | []byte  | String (ASCII-8BIT)            | ByteString | string           | List      |
 
 You can find out more about how these types are encoded when you serialize your message in Protocol Buffer Encoding.
 > 在`Protocol Buffer Encoding`一节可以看到更多关于序列化消息时如何编码各种类型的信息。
@@ -249,7 +249,7 @@ When you're defining a message type, you might want one of its fields to only ha
 In the following example we've added an enum called Corpus with all the possible values, and a field of type Corpus:
 > 在下面的示例中，我们添加了一个名为Corpus的枚举，包含所有可能的值，以及一个类型为Corpus的字段:
 
-```protobuf
+```
 enum Corpus {
   CORPUS_UNSPECIFIED = 0;
   CORPUS_UNIVERSAL = 1;
@@ -280,7 +280,7 @@ As you can see, the Corpus enum's first constant maps to zero: every enum defini
 You can define aliases by assigning the same value to different enum constants. To do this you need to set the allow_alias option to true, otherwise the protocol compiler will generate an error message when aliases are found. Though all alias values are valid during deserialization, the first value is always used when serializing.
 > 可以通过将相同的值赋给不同的enum常量来定义别名。为此，您需要将允许别名选项设置为true，否则当找到别名时，协议编译器将生成一条错误消息。尽管所有的别名值在反序列化期间都是有效的，但在序列化时总是使用第一个值。
 
-```protobuf
+```
 enum EnumAllowingAlias {
   option allow_alias = true;
   EAA_UNSPECIFIED = 0;
@@ -319,7 +319,7 @@ For more information about how to work with message enums in your applications, 
 If you update an enum type by entirely removing an enum entry, or commenting it out, future users can reuse the numeric value when making their own updates to the type. This can cause severe issues if they later load old versions of the same .proto, including data corruption, privacy bugs, and so on. One way to make sure this doesn't happen is to specify that the numeric values (and/or names, which can also cause issues for JSON serialization) of your deleted entries are reserved. The protocol buffer compiler will complain if any future users try to use these identifiers. You can specify that your reserved numeric value range goes up to the maximum possible value using the max keyword.
 > 如果通过完全删除枚举条目或将其注释掉来更新枚举类型，那么将来对该类型进行更新时可能会重用该枚举的数值。如果又要使用老版本的`.proto`，这可能会导致严重的问题，包括数据损坏、隐私漏洞等等。要确保不发生这种事情，一种有效的做法是，将废弃的枚举的数值指定为保留。废弃枚举的名称也一样应该保留，避免在JSON序列化操作中引起类似问题。任何用户试图使用这些保留值时，protobuf编译器将会报错。可以使用max关键字指定保留值范围的最大值。
 
-```protobuf
+```
 enum Foo {
   reserved 2, 15, 9 to 11, 40 to max;
   reserved "FOO", "BAR";
@@ -335,7 +335,7 @@ Note that you can't mix field names and numeric values in the same reserved stat
 You can use other message types as field types. For example, let's say you wanted to include Result messages in each SearchResponse message – to do this, you can define a Result message type in the same .proto and then specify a field of type Result in SearchResponse:
 > 您可以使用其他消息类型作为字段类型。例如，假设您想要在每个SearchResponse消息中包含Result消息，您可以在相同的`.proto`中定义Result消息类型，然后在SearchResponse中指定类型为Result的字段:
 
-```protobuf
+```
 message SearchResponse {
   repeated Result results = 1;
 }
@@ -356,7 +356,7 @@ In the above example, the Result message type is defined in the same file as Sea
 You can use definitions from other .proto files by importing them. To import another .proto's definitions, you add an import statement to the top of your file:
 > 您可以通过导入其他`.proto`文件中的定义来使用它们。要导入另一个`.proto`的定义，需要在文件的顶部添加import语句:
 
-```protobuf
+```
 import "myproject/other_protos.proto";
 ```
 
@@ -370,13 +370,13 @@ import public dependencies can be transitively relied upon by any code importing
 > 公共导入可以实现依赖传递。例如:
 
 新proto定义文件，相关定义都挪到这里了:
-```protobuf
+```
 // new.proto
 // All definitions are moved here
 ```
 
 旧proto定义文件，大家之前引入的都是这个proto，现在需要利用`import public`引入新的proto定义文件:
-```protobuf
+```
 // old.proto
 // This is the proto that all clients are importing. 
 import public "new.proto";
@@ -384,7 +384,7 @@ import "other.proto";
 ```
 
 所有引入了`old.proto`的地方不用修改，就能通过 old.proto 中对 new.proto 的公共导入，来访问 new.proto 中定义的类型:
-```protobuf
+```
 // client.proto
 import "old.proto";
 // You use definitions from old.proto and new.proto, but not other.proto
@@ -405,7 +405,7 @@ It's possible to import proto2 message types and use them in your proto3 message
 You can define and use message types inside other message types, as in the following example – here the Result message is defined inside the SearchResponse message:
 > 您可以在其他消息类型中定义和使用消息类型，如下面的示例所示，Result消息在SearchResponse消息中定义:
 
-```protobuf
+```
 message SearchResponse {
   message Result {
     string url = 1;
@@ -419,7 +419,7 @@ message SearchResponse {
 If you want to reuse this message type outside its parent message type, you refer to it as _Parent_._Type_:
 > 在其父消息类型之外重用此消息类型的话，可以用`_Parent_._Type_`的方式引用它:
 
-```protobuf
+```
 message SomeOtherMessage {
   SearchResponse.Result result = 1;
 }
@@ -428,7 +428,7 @@ message SomeOtherMessage {
 You can nest messages as deeply as you like:
 > 消息嵌套想多深都可以:
 
-```protobuf
+```
 message Outer {                  // Level 0
   message MiddleAA {  // Level 1
     message Inner {   // Level 2
@@ -499,7 +499,7 @@ Any消息类型。
 The Any message type lets you use messages as embedded types without having their .proto definition. An Any contains an arbitrary serialized message as bytes, along with a URL that acts as a globally unique identifier for and resolves to that message's type. To use the Any type, you need to import google/protobuf/any.proto.
 > Any消息类型允许您将消息作为嵌入类型使用，而不需要它们的`.proto`定义。Any包含作为`bytes`的任意序列化消息，以及充当全局唯一标识符并解析为该消息类型的URL。要使用Any的话，需要引入`google/protobuf/any.proto`。
 
-```protobuf
+```
 import "google/protobuf/any.proto";
 
 message ErrorStatus {
@@ -557,7 +557,7 @@ Note that if multiple values are set, the last set value as determined by the or
 To define a oneof in your .proto you use the oneof keyword followed by your oneof name, in this case test_oneof:
 > 要在`.proto`里定义一个oneof，需要使用`oneof`关键字，以及一个oneof名称，如下所示:
 
-```protobuf
+```
 message SampleMessage {
   oneof test_oneof {
     string name = 4;
@@ -657,7 +657,7 @@ Tag Reuse Issues
 If you want to create an associative map as part of your data definition, protocol buffers provides a handy shortcut syntax:
 > 如果希望创建关联映射作为数据定义的一部分，protobuf提供了一种方便的快捷语法:
 
-```protobuf
+```
 map<key_type, value_type> map_field = N;
 ```
 
@@ -667,7 +667,7 @@ map<key_type, value_type> map_field = N;
 So, for example, if you wanted to create a map of projects where each Project message is associated with a string key, you could define it like this:
 > 例如，创建一个项目映射，其中每个项目消息都与一个字符串键相关联，则可以像这样定义它:
 
-```protobuf
+```
 map<string, Project> projects = 3;
 ```
 
@@ -699,7 +699,7 @@ The generated map API is currently available for all proto3 supported languages.
 The map syntax is equivalent to the following on the wire, so protocol buffers implementations that do not support maps can still handle your data:
 > map在语法上等价于二进制消息上的下列写法，因此即使不支持map的protbuff也仍然能处理map数据:
 
-```protobuf
+```
 message MapFieldEntry {
   key_type key = 1;
   value_type value = 2;
@@ -717,7 +717,7 @@ Any protocol buffers implementation that supports maps must both produce and acc
 You can add an optional package specifier to a .proto file to prevent name clashes between protocol message types.
 > 可以向`.proto`文件中添加可选的包说明符，以防止消息类型之间的名称冲突。
 
-```protobuf
+```
 package foo.bar;
 message Open { ... }
 ```
@@ -725,7 +725,7 @@ message Open { ... }
 You can then use the package specifier when defining fields of your message type:
 > 然后，在定义消息类型的字段时可以使用包说明符:
 
-```protobuf
+```
 message Foo {
   ...
   foo.bar.Open open = 1;
@@ -769,7 +769,7 @@ The protocol buffer compiler resolves all type names by parsing the imported .pr
 If you want to use your message types with an RPC (Remote Procedure Call) system, you can define an RPC service interface in a .proto file and the protocol buffer compiler will generate service interface code and stubs in your chosen language. So, for example, if you want to define an RPC service with a method that takes your SearchRequest and returns a SearchResponse, you can define it in your .proto file as follows:
 > 如果要在RPC(Remote Procedure Call, 远程过程调用)系统中使用protobuf消息类型，可以在`.proto`文件中定义RPC服务接口，protobuf编译器将用对应的语言生成服务接口代码和存根。例如，在`.proto`中定义一个RPC服务中的一个方法，该方法接受`SearchRequest`并返回`SearchResponse`，如下所示:
 
-```protobuf
+```
 service SearchService {
   rpc Search(SearchRequest) returns (SearchResponse);
 }
@@ -853,21 +853,21 @@ Here are a few of the most commonly used options:
 - java_package (file option): The package you want to use for your generated Java/Kotlin classes. If no explicit java_package option is given in the .proto file, then by default the proto package (specified using the "package" keyword in the .proto file) will be used. However, proto packages generally do not make good Java packages since proto packages are not expected to start with reverse domain names. If not generating Java or Kotlin code, this option has no effect.
   > `java_package`(文件选项): 指定生成的`Java/Kotlin`类的包路径。如果没有在`.proto`文件中显式定义`java_package`选项，默认使用proto包(在`.proto`文件中通过`package`关键词指定)。但是，proto包通常并不是规范的Java包定义，因为proto包不像Java那样通常以反向域名(例如`com.xxx`)开始。如果不生成Java或Kotlin代码，则此选项无效。
 
-```protobuf
+```
 option java_package = "com.example.foo";
 ```
 
 - java_outer_classname (file option): The class name (and hence the file name) for the wrapper Java class you want to generate. If no explicit java_outer_classname is specified in the .proto file, the class name will be constructed by converting the .proto file name to camel-case (so foo_bar.proto becomes FooBar.java). If the java_multiple_files option is disabled, then all other classes/enums/etc. generated for the .proto file will be generated within this outer wrapper Java class as nested classes/enums/etc. If not generating Java code, this option has no effect.
   > `java_outer_classname`(文件选项): 想要生成的Java包装类的类名(因此也是文件名)。如果没有显式给出`java_outer_classname`选项，那么默认将`.proto`文件名转换为驼峰风格名称作为Java类名使用，比如`foo_bar.proto`对应生成`FooBar.java`。如果`java_multiple_files`选项为`false`，则`.proto`文件生成的所有类/枚举等等，都将作为嵌套的类/枚举等，生成在这个Java包装类里面。如果不生成Java或Kotlin代码，则此选项无效。
 
-```protobuf
+```
 option java_outer_classname = "Ponycopter";
 ```
 
 - java_multiple_files (file option): If false, only a single .java file will be generated for this .proto file, and all the Java classes/enums/etc. generated for the top-level messages, services, and enumerations will be nested inside of an outer class (see java_outer_classname). If true, separate .java files will be generated for each of the Java classes/enums/etc. generated for the top-level messages, services, and enumerations, and the wrapper Java class generated for this .proto file won't contain any nested classes/enums/etc. This is a Boolean option which defaults to false. If not generating Java code, this option has no effect.
   > `java_multiple_files`(文件选项): 该选项为`false`时，对应的`.proto`文件只会生成一个`.java`文件(Java包装类)，`.proto`中定义的顶级的`messages/services/enumerations`将作为内部类嵌套在Java包装类里(参考前面的选项`java_outer_classname`)。该选项为`true`时，顶级的`messages/services/enumerations`将各自生成自己的`.java`文件，而对应当前`.proto`文件的Java包装类不会包含任何嵌套的内部类。该选项是一个布尔选项，默认值是`false`。如果不生成Java或Kotlin代码，则此选项无效。
 
-```protobuf
+```
 option java_multiple_files = true;
 ```
 
@@ -883,7 +883,7 @@ option java_multiple_files = true;
   - LITE_RUNTIME: The protocol buffer compiler will generate classes that depend only on the "lite" runtime library (libprotobuf-lite instead of libprotobuf). The lite runtime is much smaller than the full library (around an order of magnitude smaller) but omits certain features like descriptors and reflection. This is particularly useful for apps running on constrained platforms like mobile phones. The compiler will still generate fast implementations of all methods as it does in SPEED mode. Generated classes will only implement the MessageLite interface in each language, which provides only a subset of the methods of the full Message interface.
     > `LITE_RUNTIME`: protobuf编译器将生成只依赖于`lite`运行时库(`libprotobuf-lite`而不是`libprotobuf`)的类。lite运行时比完整库要小得多(大约小一个数量级)，但省略了某些特性，如描述符和反射。这对于在手机等受限平台上运行的应用程序尤其有用。编译器仍然会像在`SPEED`模式下一样，以运行时的速度为目标，生成所有方法的快速实现。但此时生成的类将只实现对应语言中的`MessageLite`接口，该接口只提供完整`Message`接口的一个子集。
 
-```protobuf
+```
 option optimize_for = CODE_SIZE;
 ```
 
@@ -896,7 +896,7 @@ option optimize_for = CODE_SIZE;
 - deprecated (field option): If set to true, indicates that the field is deprecated and should not be used by new code. In most languages this has no actual effect. In Java, this becomes a @Deprecated annotation. In the future, other language-specific code generators may generate deprecation annotations on the field's accessors, which will in turn cause a warning to be emitted when compiling code which attempts to use the field. If the field is not used by anyone and you want to prevent new users from using it, consider replacing the field declaration with a reserved statement.
   > `deprecated`(文件选项): 废弃选项，如果设置为`true`，则表示该字段已弃用，不应由新代码使用。在大多数语言中，这没有实际效果。在`Java`中，会变为`@Deprecated`注释。将来，其他特定于语言的代码生成器可能会在字段的访问器上生成弃用注释，这将在编译试图使用该字段的代码时引发警告。如果没有人使用该字段，并且希望阻止新用户使用它，请考虑用保留语句替换该字段声明。
 
-```protobuf
+```
 int32 old_field = 6 [deprecated = true];
 ```
 
