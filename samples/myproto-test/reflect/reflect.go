@@ -35,10 +35,19 @@ func oldReflect(msg protoOld.Message) {
 		fmt.Println("error in oldReflect 3")
 		return
 	}
+	//goland:noinspection GoDeprecation
 	protoProps := protoOld.GetProperties(mVal.Type())
 	fmt.Println("----- oldReflect:")
 	for _, prop := range protoProps.Prop {
-		fmt.Println(prop)
+		fieldName := prop.OrigName
+		fieldValue := mVal.FieldByName(prop.Name)
+		fieldTypeStruct, ok := mVal.Type().FieldByName(prop.Name)
+		if !ok {
+			fmt.Printf("programming error: proto does not have field advertised by proto package : %s\n", prop.Name)
+			continue
+		}
+		fieldType := fieldTypeStruct.Type
+		fmt.Printf("fieldName: %s, fieldValue: %s, fieldType: %s \n", fieldName, fieldValue, fieldType)
 	}
 }
 
@@ -48,6 +57,9 @@ func newReflect(msg proto.Message) {
 	fmt.Println("----- newReflect:")
 	for k := 0; k < fds.Len(); k++ {
 		fd := fds.Get(k)
-		fmt.Println(fd)
+		fv := m.Get(fd)
+		fieldName := fd.Name()
+		fieldType := fd.Kind()
+		fmt.Printf("fieldName: %s, fieldValue: %s, fieldType: %s \n", fieldName, fv, fieldType)
 	}
 }
