@@ -47,19 +47,49 @@ func oldReflect(msg protoOld.Message) {
 			continue
 		}
 		fieldType := fieldTypeStruct.Type
-		fmt.Printf("fieldName: %s, fieldValue: %s, fieldType: %s \n", fieldName, fieldValue, fieldType)
+		fmt.Printf("prop.Name: %s, fieldName: %s, fieldValue: %s, fieldType: %s \n", prop.Name, fieldName, fieldValue, fieldType)
 	}
 }
 
 func newReflect(msg proto.Message) {
+	pmVal := reflect.ValueOf(msg)
+	pmType := reflect.TypeOf(msg)
+	if pmVal.Kind() != reflect.Ptr {
+		fmt.Println("error in oldReflect 1")
+		return
+	}
+	if pmVal.IsNil() {
+		fmt.Println("error in oldReflect 2")
+		return
+	}
+	mVal := pmVal.Elem()
+	mType := pmType.Elem()
+	if mVal.Kind() != reflect.Struct {
+		fmt.Println("error in oldReflect 3")
+		return
+	}
+
+	fdNum := mType.NumField()
+	fmt.Printf("fdNum: %d\n", fdNum)
+
+	for i := 0; i < fdNum; i++ {
+		f := mType.Field(i)
+		fmt.Printf("go字段名: %s\n", f.Name)
+	}
+
 	m := msg.ProtoReflect()
 	fds := m.Descriptor().Fields()
+	fmt.Printf("fds.Len(): %d\n", fds.Len())
+
 	fmt.Println("----- newReflect:")
 	for k := 0; k < fds.Len(); k++ {
 		fd := fds.Get(k)
+		//fmt.Println(fd.TextName())
 		fv := m.Get(fd)
+		//fmt.Println(fv)
 		fieldName := fd.Name()
 		fieldType := fd.Kind()
 		fmt.Printf("fieldName: %s, fieldValue: %s, fieldType: %s \n", fieldName, fv, fieldType)
 	}
+
 }
