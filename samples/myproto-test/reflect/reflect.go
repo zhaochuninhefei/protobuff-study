@@ -18,6 +18,26 @@ func doReflect() {
 
 	oldReflect(owner1)
 	newReflect(owner1)
+
+	fmt.Println("直接反射...")
+	pb := proto.Message(owner1)
+
+	rt := reflect.TypeOf(pb)
+	mrt := rt.Elem()
+
+	fmt.Printf("rt.Kind(): %s\n", rt.Kind())
+	fmt.Printf("rt.Name(): %s\n", rt.Name())
+	fmt.Printf("mrt.Kind(): %s\n", mrt.Kind())
+	fmt.Printf("mrt.Name(): %s\n", mrt.Name())
+
+	if mrt.Kind() != reflect.Struct {
+		fmt.Println("owner1 is not a struct!")
+		return
+	}
+	for i := 0; i < mrt.NumField(); i++ {
+		f := mrt.Field(i)
+		fmt.Printf("%s: %v\n", f.Name, f.Type.Name())
+	}
 }
 
 func oldReflect(msg protoOld.Message) {
