@@ -6,6 +6,7 @@ import (
 	"github.com/zhaochuninhefei/myproto-go/owner"
 	"google.golang.org/protobuf/proto"
 	"reflect"
+	"strings"
 )
 
 func doReflect() {
@@ -36,7 +37,19 @@ func doReflect() {
 	}
 	for i := 0; i < mrt.NumField(); i++ {
 		f := mrt.Field(i)
-		fmt.Printf("%s: %v\n", f.Name, f.Type.Name())
+		fmt.Printf("字段名: %s, 字段类型: %s, 字段标签: %s\n", f.Name, f.Type.Name(), f.Tag)
+		tagProto := f.Tag.Get("protobuf")
+		if tagProto != "" {
+			fmt.Printf("protobuf: %s\n", tagProto)
+			tmp := strings.Split(tagProto, ",")
+			for _, word := range tmp {
+				if strings.HasPrefix(word, "name=") {
+					fmt.Println("对应proto消息的字段名:" + strings.TrimPrefix(word, "name="))
+					break
+				}
+			}
+		}
+
 	}
 }
 
