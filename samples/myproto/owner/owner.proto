@@ -3,6 +3,7 @@ syntax = "proto3";
 package owner;
 
 option go_package = "github.com/zhaochuninhefei/myproto-go/owner";
+option java_package = "com.zhaochuninhefei.myproto.owner";
 
 // Owner 资产拥有者
 message Owner {

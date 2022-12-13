@@ -10,9 +10,9 @@ protobuf使用示例
 - myproto-go : 根据myproto生成go代码的存放工程。
 
 # 编译命令
-在当前目录下执行`run_protoc.sh`脚本。
+在当前目录下执行`run_protoc_go.sh`脚本。
 ```sh
-./run_protoc.sh
+./run_protoc_go.sh
 ```
 
 该脚本执行内容如下：

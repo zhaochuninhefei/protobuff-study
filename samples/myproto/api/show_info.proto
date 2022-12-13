@@ -3,6 +3,8 @@ syntax = "proto3";
 package api;
 
 option go_package = "github.com/zhaochuninhefei/myproto-go/api";
+option java_package = "com.zhaochuninhefei.myproto.api";
+option java_multiple_files = true;
 
 import "asset/basic_asset.proto";
 import "google/protobuf/timestamp.proto";

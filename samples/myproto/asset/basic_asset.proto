@@ -4,6 +4,8 @@ package asset;
 
 // 指定go包
 option go_package = "github.com/zhaochuninhefei/myproto-go/asset";
+option java_package = "com.zhaochuninhefei.myproto.asset";
+option java_multiple_files = true;
 
 // 依赖
 import "owner/owner.proto";

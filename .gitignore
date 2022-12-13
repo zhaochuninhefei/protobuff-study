@@ -5,6 +5,7 @@ samples/myproto/.vscode
 samples/myproto/.idea
 samples/myproto-test/testdata
 samples/myproto-test/go.sum
+samples/myproto-java/
 samples/.vscode
 samples/.idea
 .idea
